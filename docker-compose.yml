@@ -1,0 +1,9 @@
+version: "3.3"
+
+services:
+  # azar:
+  #   build: .
+  redis:
+    image: redis:latest
+    ports:
+      - "9000:6379"
