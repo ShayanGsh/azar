@@ -1,4 +1,4 @@
-package db
+package pools
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 )
 
 // Pool represents a connection pool for a database.
-type Pool struct {
+type PGXPool struct {
 	mu        sync.Mutex
 	conns     chan *pgx.Conn
 	connCount int
@@ -20,8 +20,8 @@ type Pool struct {
 }
 
 // NewPool creates a new connection pool for a database.
-func NewPool(maxConns int, config pgx.ConnConfig) *Pool {
-	return &Pool{
+func NewPool(maxConns int, config pgx.ConnConfig) *PGXPool {
+	return &PGXPool{
 		conns:     make(chan *pgx.Conn, maxConns),
 		maxConns:  maxConns,
 		config:    config,
@@ -31,7 +31,7 @@ func NewPool(maxConns int, config pgx.ConnConfig) *Pool {
 }
 
 // Get retrieves a connection from the pool.
-func (p *Pool) Get() (*pgx.Conn, error) {
+func (p *PGXPool) Get() (*pgx.Conn, error) {
 	select {
 	case conn := <-p.conns:
 		return conn, nil
@@ -49,7 +49,7 @@ func (p *Pool) Get() (*pgx.Conn, error) {
 }
 
 // Put returns a connection to the pool.
-func (p *Pool) Put(conn *pgx.Conn) {
+func (p *PGXPool) Put(conn *pgx.Conn) {
 	select {
 	case p.conns <- conn:
 	default:
@@ -59,7 +59,7 @@ func (p *Pool) Put(conn *pgx.Conn) {
 }
 
 // Close closes all connections in the pool.
-func (p *Pool) Close() {
+func (p *PGXPool) Close() {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
@@ -75,12 +75,12 @@ func (p *Pool) Close() {
 }
 
 // IdleConns returns the number of idle connections in the pool.
-func (p *Pool) IdleConns() int {
+func (p *PGXPool) IdleConns() int {
 	return len(p.conns)
 }
 
 // SetIdleTimeout sets the idle timeout for connections in the pool.
-func (p *Pool) SetIdleTimeout(d time.Duration) {
+func (p *PGXPool) SetIdleTimeout(d time.Duration) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 

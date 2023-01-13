@@ -3,8 +3,7 @@ package api
 import (
 	"net/http"
 	"github.com/Klaushayan/azar/api/controllers"
-	"github.com/Klaushayan/azar/api/db"
-
+	"github.com/Klaushayan/azar/api/pools"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/jackc/pgx/v5"
@@ -14,7 +13,7 @@ type Server struct {
 	Router *chi.Mux
 	Config *Config
 	JWTAuth *jwtauth.JWTAuth
-	DB *db.Pool
+	DB *pools.PGXPool
 
 	// Controllers
 	UserControllers *controllers.UserControllers
@@ -53,7 +52,7 @@ func (s *Server) createDBPool() {
 		panic(err)
 	}
 
-	s.DB = db.NewPool(20, *connConfig)
+	s.DB = pools.NewPool(20, *connConfig)
 }
 
 func (s *Server) Start() {
