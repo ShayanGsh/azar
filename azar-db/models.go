@@ -5,114 +5,113 @@
 package db
 
 import (
-	"database/sql"
-	"time"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type OauthAccessToken struct {
-	AccessToken string
-	ClientID    string
-	UserID      int32
-	Expires     time.Time
-	Scope       string
+	AccessToken string           `json:"access_token"`
+	ClientID    string           `json:"client_id"`
+	UserID      int32            `json:"user_id"`
+	Expires     pgtype.Timestamp `json:"expires"`
+	Scope       string           `json:"scope"`
 }
 
 type OauthAuthCode struct {
-	AuthCode    string
-	ClientID    string
-	UserID      int32
-	RedirectUri string
-	Expires     time.Time
-	Scope       string
+	AuthCode    string           `json:"auth_code"`
+	ClientID    string           `json:"client_id"`
+	UserID      int32            `json:"user_id"`
+	RedirectUri string           `json:"redirect_uri"`
+	Expires     pgtype.Timestamp `json:"expires"`
+	Scope       string           `json:"scope"`
 }
 
 type OauthClient struct {
-	ID           int32
-	ClientID     string
-	ClientSecret string
-	RedirectUri  string
-	GrantTypes   string
-	Scope        string
-	UserID       int32
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	ID           int32            `json:"id"`
+	ClientID     string           `json:"client_id"`
+	ClientSecret string           `json:"client_secret"`
+	RedirectUri  string           `json:"redirect_uri"`
+	GrantTypes   string           `json:"grant_types"`
+	Scope        string           `json:"scope"`
+	UserID       int32            `json:"user_id"`
+	CreatedAt    pgtype.Timestamp `json:"created_at"`
+	UpdatedAt    pgtype.Timestamp `json:"updated_at"`
 }
 
 type OauthJwt struct {
-	ClientID  string
-	Subject   sql.NullString
-	PublicKey sql.NullString
+	ClientID  string      `json:"client_id"`
+	Subject   pgtype.Text `json:"subject"`
+	PublicKey pgtype.Text `json:"public_key"`
 }
 
 type OauthPublicKey struct {
-	ClientID            string
-	PublicKey           string
-	PrivateKey          string
-	EncryptionAlgorithm string
+	ClientID            string `json:"client_id"`
+	PublicKey           string `json:"public_key"`
+	PrivateKey          string `json:"private_key"`
+	EncryptionAlgorithm string `json:"encryption_algorithm"`
 }
 
 type OauthRefreshToken struct {
-	RefreshToken string
-	ClientID     string
-	UserID       int32
-	Expires      time.Time
-	Scope        string
+	RefreshToken string           `json:"refresh_token"`
+	ClientID     string           `json:"client_id"`
+	UserID       int32            `json:"user_id"`
+	Expires      pgtype.Timestamp `json:"expires"`
+	Scope        string           `json:"scope"`
 }
 
 type OauthScope struct {
-	Scope     string
-	IsDefault sql.NullBool
+	Scope     string      `json:"scope"`
+	IsDefault pgtype.Bool `json:"is_default"`
 }
 
 type Permission struct {
-	ID          int32
-	Name        string
-	Description sql.NullString
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID          int32            `json:"id"`
+	Name        string           `json:"name"`
+	Description pgtype.Text      `json:"description"`
+	CreatedAt   pgtype.Timestamp `json:"created_at"`
+	UpdatedAt   pgtype.Timestamp `json:"updated_at"`
 }
 
 type PermissionGroup struct {
-	ID        int32
-	GroupName string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int32            `json:"id"`
+	GroupName string           `json:"group_name"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type PermissionGroupMap struct {
-	PermissionID      int32
-	PermissionGroupID int32
+	PermissionID      int32 `json:"permission_id"`
+	PermissionGroupID int32 `json:"permission_group_id"`
 }
 
 type PermissionGroupUserGroupMap struct {
-	PermissionGroupID int32
-	UserGroupID       int32
+	PermissionGroupID int32 `json:"permission_group_id"`
+	UserGroupID       int32 `json:"user_group_id"`
 }
 
 type PermissionGroupUserMap struct {
-	PermissionGroupID int32
-	UserID            int32
+	PermissionGroupID int32 `json:"permission_group_id"`
+	UserID            int32 `json:"user_id"`
 }
 
 type User struct {
-	ID        int32
-	Username  string
-	Email     string
-	FirstName string
-	LastName  string
-	Password  string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int32            `json:"id"`
+	Username  string           `json:"username"`
+	Email     string           `json:"email"`
+	FirstName string           `json:"first_name"`
+	LastName  string           `json:"last_name"`
+	Password  string           `json:"password"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type UserGroup struct {
-	ID        int32
-	GroupName string
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID        int32            `json:"id"`
+	GroupName string           `json:"group_name"`
+	CreatedAt pgtype.Timestamp `json:"created_at"`
+	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
 type UserGroupMap struct {
-	UserID      int32
-	UserGroupID int32
+	UserID      int32 `json:"user_id"`
+	UserGroupID int32 `json:"user_group_id"`
 }
