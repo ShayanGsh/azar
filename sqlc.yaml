@@ -9,6 +9,5 @@ sql:
         out: "azar-db"
         sql_package: "pgx/v5"
         emit_json_tags: true
-        emit_methods_with_db_argument: true
         emit_enum_valid_method: true
         json_tags_case_style: snake

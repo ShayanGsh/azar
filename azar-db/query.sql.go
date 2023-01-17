@@ -21,8 +21,8 @@ type AddPermissionParams struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
-func (q *Queries) AddPermission(ctx context.Context, db DBTX, arg AddPermissionParams) error {
-	_, err := db.Exec(ctx, addPermission, arg.Name, arg.CreatedAt, arg.UpdatedAt)
+func (q *Queries) AddPermission(ctx context.Context, arg AddPermissionParams) error {
+	_, err := q.db.Exec(ctx, addPermission, arg.Name, arg.CreatedAt, arg.UpdatedAt)
 	return err
 }
 
@@ -36,8 +36,8 @@ type AddPermissionGroupParams struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
-func (q *Queries) AddPermissionGroup(ctx context.Context, db DBTX, arg AddPermissionGroupParams) error {
-	_, err := db.Exec(ctx, addPermissionGroup, arg.GroupName, arg.CreatedAt, arg.UpdatedAt)
+func (q *Queries) AddPermissionGroup(ctx context.Context, arg AddPermissionGroupParams) error {
+	_, err := q.db.Exec(ctx, addPermissionGroup, arg.GroupName, arg.CreatedAt, arg.UpdatedAt)
 	return err
 }
 
@@ -50,8 +50,8 @@ type AddPermissionGroupMapParams struct {
 	PermissionGroupID int32 `json:"permission_group_id"`
 }
 
-func (q *Queries) AddPermissionGroupMap(ctx context.Context, db DBTX, arg AddPermissionGroupMapParams) error {
-	_, err := db.Exec(ctx, addPermissionGroupMap, arg.PermissionID, arg.PermissionGroupID)
+func (q *Queries) AddPermissionGroupMap(ctx context.Context, arg AddPermissionGroupMapParams) error {
+	_, err := q.db.Exec(ctx, addPermissionGroupMap, arg.PermissionID, arg.PermissionGroupID)
 	return err
 }
 
@@ -67,8 +67,8 @@ type AddUserParams struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
-func (q *Queries) AddUser(ctx context.Context, db DBTX, arg AddUserParams) error {
-	_, err := db.Exec(ctx, addUser,
+func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) error {
+	_, err := q.db.Exec(ctx, addUser,
 		arg.Username,
 		arg.Email,
 		arg.Password,
@@ -88,8 +88,8 @@ type AddUserGroupParams struct {
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 }
 
-func (q *Queries) AddUserGroup(ctx context.Context, db DBTX, arg AddUserGroupParams) error {
-	_, err := db.Exec(ctx, addUserGroup, arg.GroupName, arg.CreatedAt, arg.UpdatedAt)
+func (q *Queries) AddUserGroup(ctx context.Context, arg AddUserGroupParams) error {
+	_, err := q.db.Exec(ctx, addUserGroup, arg.GroupName, arg.CreatedAt, arg.UpdatedAt)
 	return err
 }
 
@@ -102,8 +102,8 @@ type AddUserGroupMapParams struct {
 	UserGroupID int32 `json:"user_group_id"`
 }
 
-func (q *Queries) AddUserGroupMap(ctx context.Context, db DBTX, arg AddUserGroupMapParams) error {
-	_, err := db.Exec(ctx, addUserGroupMap, arg.UserID, arg.UserGroupID)
+func (q *Queries) AddUserGroupMap(ctx context.Context, arg AddUserGroupMapParams) error {
+	_, err := q.db.Exec(ctx, addUserGroupMap, arg.UserID, arg.UserGroupID)
 	return err
 }
 
@@ -111,8 +111,8 @@ const deletePermission = `-- name: DeletePermission :exec
 DELETE FROM permissions WHERE id = $1
 `
 
-func (q *Queries) DeletePermission(ctx context.Context, db DBTX, id int32) error {
-	_, err := db.Exec(ctx, deletePermission, id)
+func (q *Queries) DeletePermission(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deletePermission, id)
 	return err
 }
 
@@ -120,8 +120,8 @@ const deletePermissionGroup = `-- name: DeletePermissionGroup :exec
 DELETE FROM permission_groups WHERE id = $1
 `
 
-func (q *Queries) DeletePermissionGroup(ctx context.Context, db DBTX, id int32) error {
-	_, err := db.Exec(ctx, deletePermissionGroup, id)
+func (q *Queries) DeletePermissionGroup(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deletePermissionGroup, id)
 	return err
 }
 
@@ -129,8 +129,8 @@ const deletePermissionGroupMap = `-- name: DeletePermissionGroupMap :exec
 DELETE FROM permission_group_map WHERE permission_group_id = $1
 `
 
-func (q *Queries) DeletePermissionGroupMap(ctx context.Context, db DBTX, permissionGroupID int32) error {
-	_, err := db.Exec(ctx, deletePermissionGroupMap, permissionGroupID)
+func (q *Queries) DeletePermissionGroupMap(ctx context.Context, permissionGroupID int32) error {
+	_, err := q.db.Exec(ctx, deletePermissionGroupMap, permissionGroupID)
 	return err
 }
 
@@ -138,8 +138,8 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users WHERE id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, db DBTX, id int32) error {
-	_, err := db.Exec(ctx, deleteUser, id)
+func (q *Queries) DeleteUser(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteUser, id)
 	return err
 }
 
@@ -147,8 +147,8 @@ const deleteUserGroup = `-- name: DeleteUserGroup :exec
 DELETE FROM user_groups WHERE id = $1
 `
 
-func (q *Queries) DeleteUserGroup(ctx context.Context, db DBTX, id int32) error {
-	_, err := db.Exec(ctx, deleteUserGroup, id)
+func (q *Queries) DeleteUserGroup(ctx context.Context, id int32) error {
+	_, err := q.db.Exec(ctx, deleteUserGroup, id)
 	return err
 }
 
@@ -156,8 +156,8 @@ const deleteUserGroupMap = `-- name: DeleteUserGroupMap :exec
 DELETE FROM user_group_map WHERE user_group_id = $1
 `
 
-func (q *Queries) DeleteUserGroupMap(ctx context.Context, db DBTX, userGroupID int32) error {
-	_, err := db.Exec(ctx, deleteUserGroupMap, userGroupID)
+func (q *Queries) DeleteUserGroupMap(ctx context.Context, userGroupID int32) error {
+	_, err := q.db.Exec(ctx, deleteUserGroupMap, userGroupID)
 	return err
 }
 
@@ -165,8 +165,8 @@ const deleteUserGroupMapByUserID = `-- name: DeleteUserGroupMapByUserID :exec
 DELETE FROM user_group_map WHERE user_id = $1
 `
 
-func (q *Queries) DeleteUserGroupMapByUserID(ctx context.Context, db DBTX, userID int32) error {
-	_, err := db.Exec(ctx, deleteUserGroupMapByUserID, userID)
+func (q *Queries) DeleteUserGroupMapByUserID(ctx context.Context, userID int32) error {
+	_, err := q.db.Exec(ctx, deleteUserGroupMapByUserID, userID)
 	return err
 }
 
@@ -174,8 +174,8 @@ const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, username, email, first_name, last_name, password, created_at, updated_at FROM users WHERE email = $1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, db DBTX, email string) (User, error) {
-	row := db.QueryRow(ctx, getUserByEmail, email)
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -194,8 +194,8 @@ const getUserById = `-- name: GetUserById :one
 SELECT id, username, email, first_name, last_name, password, created_at, updated_at FROM users WHERE id = $1
 `
 
-func (q *Queries) GetUserById(ctx context.Context, db DBTX, id int32) (User, error) {
-	row := db.QueryRow(ctx, getUserById, id)
+func (q *Queries) GetUserById(ctx context.Context, id int32) (User, error) {
+	row := q.db.QueryRow(ctx, getUserById, id)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -214,8 +214,8 @@ const getUserByOAuthClientID = `-- name: GetUserByOAuthClientID :one
 SELECT id, username, email, first_name, last_name, password, created_at, updated_at FROM users WHERE id = (SELECT user_id FROM oauth_clients WHERE client_id = $1)
 `
 
-func (q *Queries) GetUserByOAuthClientID(ctx context.Context, db DBTX, clientID string) (User, error) {
-	row := db.QueryRow(ctx, getUserByOAuthClientID, clientID)
+func (q *Queries) GetUserByOAuthClientID(ctx context.Context, clientID string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByOAuthClientID, clientID)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -234,8 +234,8 @@ const getUserByUsername = `-- name: GetUserByUsername :one
 SELECT id, username, email, first_name, last_name, password, created_at, updated_at FROM users WHERE username = $1
 `
 
-func (q *Queries) GetUserByUsername(ctx context.Context, db DBTX, username string) (User, error) {
-	row := db.QueryRow(ctx, getUserByUsername, username)
+func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByUsername, username)
 	var i User
 	err := row.Scan(
 		&i.ID,
@@ -254,8 +254,8 @@ const getUserGroupsByUserID = `-- name: GetUserGroupsByUserID :many
 SELECT id, group_name, created_at, updated_at FROM user_groups WHERE id IN (SELECT user_group_id FROM user_group_map WHERE user_id = $1)
 `
 
-func (q *Queries) GetUserGroupsByUserID(ctx context.Context, db DBTX, userID int32) ([]UserGroup, error) {
-	rows, err := db.Query(ctx, getUserGroupsByUserID, userID)
+func (q *Queries) GetUserGroupsByUserID(ctx context.Context, userID int32) ([]UserGroup, error) {
+	rows, err := q.db.Query(ctx, getUserGroupsByUserID, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -288,8 +288,8 @@ type RemovePermissionGroupMapParams struct {
 	PermissionGroupID int32 `json:"permission_group_id"`
 }
 
-func (q *Queries) RemovePermissionGroupMap(ctx context.Context, db DBTX, arg RemovePermissionGroupMapParams) error {
-	_, err := db.Exec(ctx, removePermissionGroupMap, arg.PermissionID, arg.PermissionGroupID)
+func (q *Queries) RemovePermissionGroupMap(ctx context.Context, arg RemovePermissionGroupMapParams) error {
+	_, err := q.db.Exec(ctx, removePermissionGroupMap, arg.PermissionID, arg.PermissionGroupID)
 	return err
 }
 
@@ -302,8 +302,8 @@ type RemoveUserGroupMapParams struct {
 	UserGroupID int32 `json:"user_group_id"`
 }
 
-func (q *Queries) RemoveUserGroupMap(ctx context.Context, db DBTX, arg RemoveUserGroupMapParams) error {
-	_, err := db.Exec(ctx, removeUserGroupMap, arg.UserID, arg.UserGroupID)
+func (q *Queries) RemoveUserGroupMap(ctx context.Context, arg RemoveUserGroupMapParams) error {
+	_, err := q.db.Exec(ctx, removeUserGroupMap, arg.UserID, arg.UserGroupID)
 	return err
 }
 
@@ -317,8 +317,8 @@ type UpdatePasswordParams struct {
 	ID        int32            `json:"id"`
 }
 
-func (q *Queries) UpdatePassword(ctx context.Context, db DBTX, arg UpdatePasswordParams) error {
-	_, err := db.Exec(ctx, updatePassword, arg.Password, arg.UpdatedAt, arg.ID)
+func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
+	_, err := q.db.Exec(ctx, updatePassword, arg.Password, arg.UpdatedAt, arg.ID)
 	return err
 }
 
@@ -332,8 +332,8 @@ type UpdatePermissionParams struct {
 	ID        int32            `json:"id"`
 }
 
-func (q *Queries) UpdatePermission(ctx context.Context, db DBTX, arg UpdatePermissionParams) error {
-	_, err := db.Exec(ctx, updatePermission, arg.Name, arg.UpdatedAt, arg.ID)
+func (q *Queries) UpdatePermission(ctx context.Context, arg UpdatePermissionParams) error {
+	_, err := q.db.Exec(ctx, updatePermission, arg.Name, arg.UpdatedAt, arg.ID)
 	return err
 }
 
@@ -347,8 +347,8 @@ type UpdatePermissionGroupParams struct {
 	ID        int32            `json:"id"`
 }
 
-func (q *Queries) UpdatePermissionGroup(ctx context.Context, db DBTX, arg UpdatePermissionGroupParams) error {
-	_, err := db.Exec(ctx, updatePermissionGroup, arg.GroupName, arg.UpdatedAt, arg.ID)
+func (q *Queries) UpdatePermissionGroup(ctx context.Context, arg UpdatePermissionGroupParams) error {
+	_, err := q.db.Exec(ctx, updatePermissionGroup, arg.GroupName, arg.UpdatedAt, arg.ID)
 	return err
 }
 
@@ -363,8 +363,8 @@ type UpdateUserParams struct {
 	ID        int32            `json:"id"`
 }
 
-func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg UpdateUserParams) error {
-	_, err := db.Exec(ctx, updateUser,
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) error {
+	_, err := q.db.Exec(ctx, updateUser,
 		arg.Username,
 		arg.Email,
 		arg.UpdatedAt,
@@ -382,8 +382,8 @@ type VerifyUserParams struct {
 	Password string `json:"password"`
 }
 
-func (q *Queries) VerifyUser(ctx context.Context, db DBTX, arg VerifyUserParams) error {
-	_, err := db.Exec(ctx, verifyUser, arg.Username, arg.Password)
+func (q *Queries) VerifyUser(ctx context.Context, arg VerifyUserParams) error {
+	_, err := q.db.Exec(ctx, verifyUser, arg.Username, arg.Password)
 	return err
 }
 
@@ -396,7 +396,7 @@ type VerifyUserByEmailParams struct {
 	Password string `json:"password"`
 }
 
-func (q *Queries) VerifyUserByEmail(ctx context.Context, db DBTX, arg VerifyUserByEmailParams) error {
-	_, err := db.Exec(ctx, verifyUserByEmail, arg.Email, arg.Password)
+func (q *Queries) VerifyUserByEmail(ctx context.Context, arg VerifyUserByEmailParams) error {
+	_, err := q.db.Exec(ctx, verifyUserByEmail, arg.Email, arg.Password)
 	return err
 }
