@@ -69,3 +69,9 @@ DELETE FROM permission_groups WHERE id = $1;
 
 -- name: DeletePermissionGroupMap :exec
 DELETE FROM permission_group_map WHERE permission_group_id = $1;
+
+-- name: VerifyUser :exec
+SELECT * FROM users WHERE username = $1 OR email = $1 AND password = $2;
+
+-- name: VerifyUserByEmail :exec
+SELECT * FROM users WHERE email = $1 AND password = $2;

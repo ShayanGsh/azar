@@ -372,3 +372,31 @@ func (q *Queries) UpdateUser(ctx context.Context, db DBTX, arg UpdateUserParams)
 	)
 	return err
 }
+
+const verifyUser = `-- name: VerifyUser :exec
+SELECT id, username, email, first_name, last_name, password, created_at, updated_at FROM users WHERE username = $1 OR email = $1 AND password = $2
+`
+
+type VerifyUserParams struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) VerifyUser(ctx context.Context, db DBTX, arg VerifyUserParams) error {
+	_, err := db.Exec(ctx, verifyUser, arg.Username, arg.Password)
+	return err
+}
+
+const verifyUserByEmail = `-- name: VerifyUserByEmail :exec
+SELECT id, username, email, first_name, last_name, password, created_at, updated_at FROM users WHERE email = $1 AND password = $2
+`
+
+type VerifyUserByEmailParams struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+func (q *Queries) VerifyUserByEmail(ctx context.Context, db DBTX, arg VerifyUserByEmailParams) error {
+	_, err := db.Exec(ctx, verifyUserByEmail, arg.Email, arg.Password)
+	return err
+}
