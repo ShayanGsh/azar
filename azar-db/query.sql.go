@@ -61,7 +61,7 @@ INSERT INTO users (username, email, password, created_at, updated_at) VALUES ($1
 
 type AddUserParams struct {
 	Username  string           `json:"username"`
-	Email     string           `json:"email"`
+	Email     pgtype.Text      `json:"email"`
 	Password  string           `json:"password"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
@@ -174,7 +174,7 @@ const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT id, username, email, first_name, last_name, password, created_at, updated_at FROM users WHERE email = $1
 `
 
-func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+func (q *Queries) GetUserByEmail(ctx context.Context, email pgtype.Text) (User, error) {
 	row := q.db.QueryRow(ctx, getUserByEmail, email)
 	var i User
 	err := row.Scan(
@@ -358,7 +358,7 @@ UPDATE users SET username = $1, email = $2, updated_at = $3 WHERE id = $4
 
 type UpdateUserParams struct {
 	Username  string           `json:"username"`
-	Email     string           `json:"email"`
+	Email     pgtype.Text      `json:"email"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
 	ID        int32            `json:"id"`
 }
@@ -392,8 +392,8 @@ SELECT id, username, email, first_name, last_name, password, created_at, updated
 `
 
 type VerifyUserByEmailParams struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
+	Email    pgtype.Text `json:"email"`
+	Password string      `json:"password"`
 }
 
 func (q *Queries) VerifyUserByEmail(ctx context.Context, arg VerifyUserByEmailParams) error {

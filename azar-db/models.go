@@ -96,9 +96,9 @@ type PermissionGroupUserMap struct {
 type User struct {
 	ID        int32            `json:"id"`
 	Username  string           `json:"username"`
-	Email     string           `json:"email"`
-	FirstName string           `json:"first_name"`
-	LastName  string           `json:"last_name"`
+	Email     pgtype.Text      `json:"email"`
+	FirstName pgtype.Text      `json:"first_name"`
+	LastName  pgtype.Text      `json:"last_name"`
 	Password  string           `json:"password"`
 	CreatedAt pgtype.Timestamp `json:"created_at"`
 	UpdatedAt pgtype.Timestamp `json:"updated_at"`
