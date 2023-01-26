@@ -1,9 +1,38 @@
 version: "3.3"
 
 services:
-  # azar:
-  #   build: .
+  azar:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - postgres
+    restart: always
+    networks:
+      - azar-network
   redis:
     image: redis:latest
     ports:
       - "9000:6379"
+  postgres:
+    image: postgres:latest
+    hostname: postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ${AZAR_DB_PASS}
+      POSTGRES_USER: ${AZAR_DB_USER}
+      POSTGRES_DB: ${AZAR_DB}
+    volumes:
+      - ./db:/var/lib/postgresql/data
+    restart: always
+    networks:
+      - azar-network
+
+networks:
+  azar-network:
+    driver: bridge
+
