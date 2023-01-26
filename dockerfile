@@ -13,4 +13,8 @@ FROM alpine
 
 COPY --from=builder /app/cmd/main /app/
 
-CMD ["/app/main"]
+RUN chmod +x /app/main
+
+WORKDIR /app
+
+CMD ["./main"]
