@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/Klaushayan/azar/api"
+	"log"
 )
 
 func main() {
@@ -12,4 +13,5 @@ func main() {
 
 	s := api.NewServer(c)
 	s.Start()
+	log.Println("Started")
 }
