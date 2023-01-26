@@ -34,13 +34,13 @@ type Database struct {
 
 func (db *Database) ToConnString() (string) {
     var buf bytes.Buffer
-	fmt.Fprintf(&buf, "host=%s port=%d user=%s password=%s dbname=%s", db.Host, db.Port, db.Username, db.Password, db.Name)
+	fmt.Fprintf(&buf, "host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", db.Host, db.Port, db.Username, db.Password, db.Name, "disable")
     return buf.String()
 }
 
 func (c *Config) ToConnString() (string) {
 	var buf bytes.Buffer
-	fmt.Fprintf(&buf, "host=%s port=%d user=%s password=%s dbname=%s", c.DatabaseHost, c.DatabasePort, c.DatabaseUsername, c.DatabasePassword, c.DatabaseName)
+	fmt.Fprintf(&buf, "host=%s port=%d user=%s password=%s dbname=%s sslmode=%s", c.DatabaseHost, c.DatabasePort, c.DatabaseUsername, c.DatabasePassword, c.DatabaseName, "disable")
     return buf.String()
 }
 
