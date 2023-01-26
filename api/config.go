@@ -38,6 +38,12 @@ func (db *Database) ToConnString() (string) {
     return buf.String()
 }
 
+func (c *Config) ToConnString() (string) {
+	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "host=%s port=%d user=%s password=%s dbname=%s", c.DatabaseHost, c.DatabasePort, c.DatabaseUsername, c.DatabasePassword, c.DatabaseName)
+    return buf.String()
+}
+
 func (c *Config) Address() (string) {
 	var buf bytes.Buffer
 	fmt.Fprintf(&buf, "%s:%d", c.Host, c.Port)
