@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+
 	"github.com/Klaushayan/azar/api/controllers"
 	"github.com/Klaushayan/azar/api/pools"
 	"github.com/go-chi/chi/v5"
@@ -44,10 +45,11 @@ func (s *Server) setupRoutes() {
 	})
 
 	s.Router.Post("/login", s.UserControllers.Login)
+	s.Router.Post("/register", s.UserControllers.Register)
 }
 
 func (s *Server) createDBPool() {
-	connConfig, err := pgx.ParseConfig(s.Config.Database.ToConnString())
+	connConfig, err := pgx.ParseConfig(s.Config.ToConnString())
 	if err != nil {
 		panic(err)
 	}
@@ -57,5 +59,8 @@ func (s *Server) createDBPool() {
 
 func (s *Server) Start() {
 	s.setupRoutes()
-	http.ListenAndServe(s.Config.Address(), s.Router)
+	err := http.ListenAndServe(s.Config.Address(), s.Router)
+	if err != nil {
+		panic(err)
+	}
 }
