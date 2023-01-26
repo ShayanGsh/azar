@@ -1,13 +1,16 @@
 package api
 
 import (
+	"database/sql"
 	"net/http"
 
 	"github.com/Klaushayan/azar/api/controllers"
 	"github.com/Klaushayan/azar/api/pools"
+	"github.com/Klaushayan/azar/azar-db"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/jackc/pgx/v5"
+	_ "github.com/lib/pq"
 )
 
 type Server struct {
@@ -55,6 +58,27 @@ func (s *Server) createDBPool() {
 	}
 
 	s.DB = pools.NewPool(20, *connConfig)
+}
+
+func (s *Server) MigrationCheck() bool{
+	conn, err := sql.Open("postgres", s.Config.ToConnString())
+	if err != nil {
+		panic(err)
+	}
+	status, err := db.IsMigrated(db.Migration("./"), conn)
+	if err != nil {
+		panic(err)
+	}
+	if !status {
+		err = db.RunMigration(db.Migration("./"), conn, 0)
+		if err != nil {
+			panic(err)
+		}
+		return true
+	} else {
+		println("Migration already done")
+		return true
+	}
 }
 
 func (s *Server) Start() {
