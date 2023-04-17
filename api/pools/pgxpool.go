@@ -74,6 +74,11 @@ func (p *PGXPool) Close() {
 	}
 }
 
+// Set the underlaying pgx connection timeout
+func (p *PGXPool) SetConnTimeout(d time.Duration) {
+	p.config.ConnectTimeout = d
+}
+
 // IdleConns returns the number of idle connections in the pool.
 func (p *PGXPool) IdleConns() int {
 	return len(p.conns)

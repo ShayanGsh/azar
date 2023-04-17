@@ -54,12 +54,13 @@ func (s *Server) setupRoutes() {
 
 func (s *Server) createDBPool() {
 	connConfig, err := pgx.ParseConfig(s.Config.ToConnString())
-	connConfig.ConnectTimeout = 1 * time.Second
+
 	if err != nil {
 		panic(err)
 	}
 
 	s.DB = pools.NewPool(20, *connConfig)
+	s.DB.SetConnTimeout(1 * time.Second)
 }
 
 func (s *Server) MigrationCheck() bool{
