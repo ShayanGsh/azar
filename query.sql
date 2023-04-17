@@ -14,13 +14,13 @@ SELECT * FROM users WHERE id = (SELECT user_id FROM oauth_clients WHERE client_i
 SELECT * FROM user_groups WHERE id IN (SELECT user_group_id FROM user_group_map WHERE user_id = $1);
 
 -- name: AddUser :exec
-INSERT INTO users (username, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5);
+INSERT INTO users (username, email, password) VALUES ($1, $2, $3);
 
 -- name: AddUserGroup :exec
-INSERT INTO user_groups (group_name, created_at, updated_at) VALUES ($1, $2, $3);
+INSERT INTO user_groups (group_name) VALUES ($1);
 
 -- name: UpdatePassword :exec
-UPDATE users SET password = $1, updated_at = $2 WHERE id = $3;
+UPDATE users SET password = $1 WHERE id = $2;
 
 -- name: UpdateUser :exec
 UPDATE users SET username = $1, email = $2, updated_at = $3 WHERE id = $4;
@@ -44,10 +44,10 @@ DELETE FROM user_group_map WHERE user_group_id = $1;
 DELETE FROM user_group_map WHERE user_id = $1;
 
 -- name: AddPermission :exec
-INSERT INTO permissions (name, created_at, updated_at) VALUES ($1, $2, $3);
+INSERT INTO permissions (name) VALUES ($1);
 
 -- name: AddPermissionGroup :exec
-INSERT INTO permission_groups (group_name, created_at, updated_at) VALUES ($1, $2, $3);
+INSERT INTO permission_groups (group_name) VALUES ($1);
 
 -- name: AddPermissionGroupMap :exec
 INSERT INTO permission_group_map (permission_id, permission_group_id) VALUES ($1, $2);

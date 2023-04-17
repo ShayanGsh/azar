@@ -12,6 +12,7 @@ func main() {
 	}
 
 	s := api.NewServer(c)
+	s.MigrationCheck()
 	s.Start()
 	log.Println("Started")
 }

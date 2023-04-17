@@ -12,32 +12,20 @@ import (
 )
 
 const addPermission = `-- name: AddPermission :exec
-INSERT INTO permissions (name, created_at, updated_at) VALUES ($1, $2, $3)
+INSERT INTO permissions (name) VALUES ($1)
 `
 
-type AddPermissionParams struct {
-	Name      string           `json:"name"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-}
-
-func (q *Queries) AddPermission(ctx context.Context, arg AddPermissionParams) error {
-	_, err := q.db.Exec(ctx, addPermission, arg.Name, arg.CreatedAt, arg.UpdatedAt)
+func (q *Queries) AddPermission(ctx context.Context, name string) error {
+	_, err := q.db.Exec(ctx, addPermission, name)
 	return err
 }
 
 const addPermissionGroup = `-- name: AddPermissionGroup :exec
-INSERT INTO permission_groups (group_name, created_at, updated_at) VALUES ($1, $2, $3)
+INSERT INTO permission_groups (group_name) VALUES ($1)
 `
 
-type AddPermissionGroupParams struct {
-	GroupName string           `json:"group_name"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-}
-
-func (q *Queries) AddPermissionGroup(ctx context.Context, arg AddPermissionGroupParams) error {
-	_, err := q.db.Exec(ctx, addPermissionGroup, arg.GroupName, arg.CreatedAt, arg.UpdatedAt)
+func (q *Queries) AddPermissionGroup(ctx context.Context, groupName string) error {
+	_, err := q.db.Exec(ctx, addPermissionGroup, groupName)
 	return err
 }
 
@@ -56,40 +44,26 @@ func (q *Queries) AddPermissionGroupMap(ctx context.Context, arg AddPermissionGr
 }
 
 const addUser = `-- name: AddUser :exec
-INSERT INTO users (username, email, password, created_at, updated_at) VALUES ($1, $2, $3, $4, $5)
+INSERT INTO users (username, email, password) VALUES ($1, $2, $3)
 `
 
 type AddUserParams struct {
-	Username  string           `json:"username"`
-	Email     pgtype.Text      `json:"email"`
-	Password  string           `json:"password"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
+	Username string      `json:"username"`
+	Email    pgtype.Text `json:"email"`
+	Password string      `json:"password"`
 }
 
 func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) error {
-	_, err := q.db.Exec(ctx, addUser,
-		arg.Username,
-		arg.Email,
-		arg.Password,
-		arg.CreatedAt,
-		arg.UpdatedAt,
-	)
+	_, err := q.db.Exec(ctx, addUser, arg.Username, arg.Email, arg.Password)
 	return err
 }
 
 const addUserGroup = `-- name: AddUserGroup :exec
-INSERT INTO user_groups (group_name, created_at, updated_at) VALUES ($1, $2, $3)
+INSERT INTO user_groups (group_name) VALUES ($1)
 `
 
-type AddUserGroupParams struct {
-	GroupName string           `json:"group_name"`
-	CreatedAt pgtype.Timestamp `json:"created_at"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-}
-
-func (q *Queries) AddUserGroup(ctx context.Context, arg AddUserGroupParams) error {
-	_, err := q.db.Exec(ctx, addUserGroup, arg.GroupName, arg.CreatedAt, arg.UpdatedAt)
+func (q *Queries) AddUserGroup(ctx context.Context, groupName string) error {
+	_, err := q.db.Exec(ctx, addUserGroup, groupName)
 	return err
 }
 
@@ -308,17 +282,16 @@ func (q *Queries) RemoveUserGroupMap(ctx context.Context, arg RemoveUserGroupMap
 }
 
 const updatePassword = `-- name: UpdatePassword :exec
-UPDATE users SET password = $1, updated_at = $2 WHERE id = $3
+UPDATE users SET password = $1 WHERE id = $2
 `
 
 type UpdatePasswordParams struct {
-	Password  string           `json:"password"`
-	UpdatedAt pgtype.Timestamp `json:"updated_at"`
-	ID        int32            `json:"id"`
+	Password string `json:"password"`
+	ID       int32  `json:"id"`
 }
 
 func (q *Queries) UpdatePassword(ctx context.Context, arg UpdatePasswordParams) error {
-	_, err := q.db.Exec(ctx, updatePassword, arg.Password, arg.UpdatedAt, arg.ID)
+	_, err := q.db.Exec(ctx, updatePassword, arg.Password, arg.ID)
 	return err
 }
 
