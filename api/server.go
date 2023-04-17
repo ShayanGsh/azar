@@ -21,7 +21,7 @@ type Server struct {
 	DB *pools.PGXPool
 
 	// Controllers
-	UserControllers *controllers.UserControllers
+	UserControllers *controllers.UserController
 }
 
 

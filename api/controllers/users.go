@@ -12,7 +12,7 @@ import (
 )
 
 type User struct {
-    Username    string `json:"username" validate:"required_without=Email,omitempty,min=1,max=100,excludesall=0x20"`
+    Username    string `json:"username" validate:"required_without=Email,omitempty,min=1,max=100"`
     Email   string `json:"email" validate:"required_without=Username,omitempty,email"`
     Password string `json:"password" validate:"required,min=8"`
 }
@@ -25,16 +25,20 @@ type UpdateUser struct {
 	NewPassword string `json:"new_password" validate:"min=8"`
 }
 
-type UserControllers struct {
-	dcp *pools.PGXPool // database connection pool
+type UserController struct {
+	Controller
 }
 
-func NewUserControllers(dcp *pools.PGXPool) *UserControllers {
+func NewUserControllers(dcp *pools.PGXPool) *UserController {
 	dcp.SetIdleTimeout(5 * time.Second)
-	return &UserControllers{dcp: dcp}
+	return &UserController{
+		Controller: Controller{
+			dcp: dcp,
+		},
+	}
 }
 
-func (uc *UserControllers) Login(rw http.ResponseWriter, r *http.Request) {
+func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
 	var user User
 	c, q, err := uc.parseRequest(r, &user)
 
@@ -52,7 +56,7 @@ func (uc *UserControllers) Login(rw http.ResponseWriter, r *http.Request) {
 	rw.Write([]byte("wrong"))
 }
 
-func (uc *UserControllers) Register(rw http.ResponseWriter, r *http.Request) {
+func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 	var user User
 	c, q, err := uc.parseRequest(r, &user)
 
@@ -74,7 +78,7 @@ func (uc *UserControllers) Register(rw http.ResponseWriter, r *http.Request) {
 	rw.WriteHeader(http.StatusCreated)
 }
 
-func (uc *UserControllers) VerifyUser(queries *db.Queries, user User) (bool, error) {
+func (uc *UserController) VerifyUser(queries *db.Queries, user User) (bool, error) {
 	var err error
 	ctx := context.Background()
 	if user.Username != "" {

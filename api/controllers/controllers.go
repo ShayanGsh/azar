@@ -4,19 +4,24 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/Klaushayan/azar/api/pools"
 	db "github.com/Klaushayan/azar/azar-db"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5"
 )
 
-func (uc *UserControllers) parseRequest(r *http.Request, body interface{}) (*pgx.Conn, *db.Queries, error) {
+type Controller struct {
+	dcp *pools.PGXPool // database connection pool
+}
 
-	c, err := uc.dcp.Get()
+func (ctrl *Controller) parseRequest(r *http.Request, body interface{}) (*pgx.Conn, *db.Queries, error) {
+
+	c, err := ctrl.dcp.Get()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	defer uc.dcp.Put(c)
+	defer ctrl.dcp.Put(c)
 
 	q := db.New(c)
 
