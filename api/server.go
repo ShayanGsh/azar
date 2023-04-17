@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"time"
 
 	"github.com/Klaushayan/azar/api/controllers"
 	"github.com/Klaushayan/azar/api/pools"
@@ -53,6 +54,7 @@ func (s *Server) setupRoutes() {
 
 func (s *Server) createDBPool() {
 	connConfig, err := pgx.ParseConfig(s.Config.ToConnString())
+	connConfig.ConnectTimeout = 1 * time.Second
 	if err != nil {
 		panic(err)
 	}
