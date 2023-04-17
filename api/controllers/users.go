@@ -2,14 +2,12 @@ package controllers
 
 import (
 	"context"
-	"encoding/json"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/Klaushayan/azar/api/pools"
 	"github.com/Klaushayan/azar/azar-db"
-	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
@@ -17,6 +15,14 @@ type User struct {
     Username    string `json:"username" validate:"required_without=Email,omitempty,min=1,max=100,excludesall=0x20"`
     Email   string `json:"email" validate:"required_without=Username,omitempty,email"`
     Password string `json:"password" validate:"required,min=8"`
+}
+
+type UpdateUser struct {
+	Username    string `json:"username" validate:"required_without=Email,omitempty,min=1,max=100,excludesall=0x20"`
+	Email   string `json:"email" validate:"required_without=Username,omitempty,email"`
+	NewEmail    string `json:"new_email" validate:"omitempty,email"`
+	OldPassword string `json:"old_password" validate:"required,min=8"`
+	NewPassword string `json:"new_password" validate:"min=8"`
 }
 
 type UserControllers struct {
@@ -29,25 +35,14 @@ func NewUserControllers(dcp *pools.PGXPool) *UserControllers {
 }
 
 func (uc *UserControllers) Login(rw http.ResponseWriter, r *http.Request) {
-	c, err := uc.dcp.Get()
+	var user User
+	c, q, err := uc.parseRequest(r, &user)
+
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 	defer uc.dcp.Put(c)
-
-	q := db.New(c)
-	var user User
-	err = json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		rw.WriteHeader(http.StatusBadRequest)
-		return
-	}
-	err = validator.New().Struct(user)
-	if err != nil {
-		rw.WriteHeader(http.StatusBadRequest)
-		return
-	}
 
 	v, _ := uc.VerifyUser(q, user)
 	if v {
@@ -58,28 +53,15 @@ func (uc *UserControllers) Login(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserControllers) Register(rw http.ResponseWriter, r *http.Request) {
-	c, err := uc.dcp.Get()
+	var user User
+	c, q, err := uc.parseRequest(r, &user)
+
 	if err != nil {
 		rw.WriteHeader(http.StatusInternalServerError)
-		log.Println(err)
 		return
 	}
 	defer uc.dcp.Put(c)
 
-	q := db.New(c)
-	var user User
-	err = json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		rw.WriteHeader(http.StatusBadRequest)
-		log.Println(err)
-		return
-	}
-	err = validator.New().Struct(user)
-    if err != nil {
-        rw.WriteHeader(http.StatusBadRequest)
-		log.Println(err)
-		return
-    }
 	if err := q.AddUser(r.Context(), db.AddUserParams{
 		Username: user.Username,
 		Email:   pgtype.Text{String: user.Email},
