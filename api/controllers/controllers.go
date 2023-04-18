@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/Klaushayan/azar/api/pools"
@@ -18,7 +19,7 @@ func (ctrl *Controller) parseRequest(r *http.Request, body interface{}) (*pgx.Co
 
 	c, err := ctrl.dcp.Get()
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.New("internal server error")
 	}
 
 	defer ctrl.dcp.Put(c)
@@ -26,15 +27,15 @@ func (ctrl *Controller) parseRequest(r *http.Request, body interface{}) (*pgx.Co
 	q := db.New(c)
 
 	if r.Body == nil {
-		return nil, nil, err
+		return c, q, nil
 	}
 	err = json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.New("invalid request body")
 	}
 	err = validator.New().Struct(body)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.New("invalid request body")
 	}
 	return c, q, nil
 }
