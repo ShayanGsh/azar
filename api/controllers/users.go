@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"errors"
+	"log"
 	"net/http"
 	"time"
 
@@ -71,8 +72,16 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 		Email:   pgtype.Text{String: user.Email},
 		Password: user.Password,
 	}); err != nil {
-		ReplyError(rw, err, http.StatusInternalServerError)
-		return
+		dbe := uc.parseDBError(err)
+		log.Println(dbe)
+		switch dbe.Code {
+		case "23505":
+			ReplyError(rw, errors.New("username or email already exists"), http.StatusConflict)
+			return
+		default:
+			ReplyError(rw, errors.New(dbe.Message), http.StatusInternalServerError)
+			return
+		}
 	}
 	ReplySuccess(rw, "success", http.StatusCreated)
 }

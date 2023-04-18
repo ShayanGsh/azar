@@ -9,10 +9,17 @@ import (
 	db "github.com/Klaushayan/azar/azar-db"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgconn"
 )
 
 type Controller struct {
 	dcp *pools.PGXPool // database connection pool
+}
+
+type DBError struct {
+	Code    string `json:"Code"`
+	Message string `json:"Message"`
+	Detail  string `json:"Detail"`
 }
 
 func (ctrl *Controller) parseRequest(r *http.Request, body interface{}) (*pgx.Conn, *db.Queries, error) {
@@ -38,4 +45,26 @@ func (ctrl *Controller) parseRequest(r *http.Request, body interface{}) (*pgx.Co
 		return nil, nil, errors.New("invalid request body")
 	}
 	return c, q, nil
+}
+
+func (ctrl *Controller) parseDBError(err error) DBError {
+	if err == nil {
+		return DBError{}
+	}
+	var dbErr DBError
+
+	pgErr, ok := err.(*pgconn.PgError)
+	dbErr.Code = pgErr.Code
+	dbErr.Message = pgErr.Message
+	dbErr.Detail = pgErr.Detail
+
+	if !ok {
+		return DBError{
+			Code:    "0",
+			Message: "internal server error",
+			Detail:  "internal server error",
+		}
+	}
+
+	return dbErr
 }
