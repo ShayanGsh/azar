@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"context"
-	"log"
+	"errors"
 	"net/http"
 	"time"
 
@@ -43,17 +43,17 @@ func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
 	c, q, err := uc.parseRequest(r, &user)
 
 	if err != nil {
-		rw.WriteHeader(http.StatusInternalServerError)
+		ReplyError(rw, err, http.StatusInternalServerError)
 		return
 	}
 	defer uc.dcp.Put(c)
 
 	v, _ := uc.VerifyUser(q, user)
 	if v {
-		rw.Write([]byte("logged in"))
+		ReplySuccess(rw, "success")
 		return
 	}
-	rw.Write([]byte("wrong"))
+	ReplyError(rw, errors.New("invalid credentials"), http.StatusUnauthorized)
 }
 
 func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
@@ -61,7 +61,7 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 	c, q, err := uc.parseRequest(r, &user)
 
 	if err != nil {
-		rw.WriteHeader(http.StatusInternalServerError)
+		ReplyError(rw, err, http.StatusInternalServerError)
 		return
 	}
 	defer uc.dcp.Put(c)
@@ -71,11 +71,10 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 		Email:   pgtype.Text{String: user.Email},
 		Password: user.Password,
 	}); err != nil {
-		rw.WriteHeader(http.StatusInternalServerError)
-		log.Println(err)
+		ReplyError(rw, err, http.StatusInternalServerError)
 		return
 	}
-	rw.WriteHeader(http.StatusCreated)
+	ReplySuccess(rw, "success", http.StatusCreated)
 }
 
 func (uc *UserController) VerifyUser(queries *db.Queries, user User) (bool, error) {
