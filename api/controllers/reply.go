@@ -28,9 +28,12 @@ func ReplyError(rw http.ResponseWriter, err error, status int) {
 }
 
 func ReplySuccess(rw http.ResponseWriter, message string, status ...int) {
+	if len(status) == 0 {
+		status = append(status, http.StatusOK)
+	}
 	Reply(rw, ReplyMessage{
 		Success: true,
 		Message: message,
-		Status:  status[0],
+		Status: status[0],
 	})
 }
