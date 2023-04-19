@@ -1,16 +1,16 @@
 package api
 
 import (
+	"context"
 	"database/sql"
 	"net/http"
-	"time"
+
 
 	"github.com/Klaushayan/azar/api/controllers"
-	"github.com/Klaushayan/azar/api/pools"
 	"github.com/Klaushayan/azar/azar-db"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
 )
 
@@ -18,7 +18,7 @@ type Server struct {
 	Router *chi.Mux
 	Config *Config
 	JWTAuth *jwtauth.JWTAuth
-	DB *pools.PGXPool
+	DB *pgxpool.Pool
 
 	// Controllers
 	UserControllers *controllers.UserController
@@ -53,14 +53,17 @@ func (s *Server) setupRoutes() {
 }
 
 func (s *Server) createDBPool() {
-	connConfig, err := pgx.ParseConfig(s.Config.ToConnString())
+	connConfig, err := pgxpool.ParseConfig(s.Config.ToConnString())
 
 	if err != nil {
 		panic(err)
 	}
 
-	s.DB = pools.NewPool(20, *connConfig)
-	s.DB.SetConnTimeout(1 * time.Second)
+	s.DB, err = pgxpool.NewWithConfig(context.Background(), connConfig)
+
+	if err != nil {
+		panic(err)
+	}
 }
 
 func (s *Server) MigrationCheck() bool{

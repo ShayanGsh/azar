@@ -5,11 +5,10 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"time"
 
-	"github.com/Klaushayan/azar/api/pools"
 	"github.com/Klaushayan/azar/azar-db"
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type User struct {
@@ -30,8 +29,7 @@ type UserController struct {
 	Controller
 }
 
-func NewUserControllers(dcp *pools.PGXPool) *UserController {
-	dcp.SetIdleTimeout(5 * time.Second)
+func NewUserControllers(dcp *pgxpool.Pool) *UserController {
 	return &UserController{
 		Controller: Controller{
 			dcp: dcp,
@@ -47,7 +45,7 @@ func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
 		ReplyError(rw, err, http.StatusInternalServerError)
 		return
 	}
-	defer uc.dcp.Put(c)
+	defer c.Release()
 
 	v, _ := uc.VerifyUser(q, user)
 	if v {
@@ -65,7 +63,7 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 		ReplyError(rw, err, http.StatusInternalServerError)
 		return
 	}
-	defer uc.dcp.Put(c)
+	defer c.Release()
 
 	if err := q.AddUser(r.Context(), db.AddUserParams{
 		Username: user.Username,

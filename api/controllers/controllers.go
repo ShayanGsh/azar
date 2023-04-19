@@ -5,15 +5,14 @@ import (
 	"errors"
 	"net/http"
 
-	"github.com/Klaushayan/azar/api/pools"
 	db "github.com/Klaushayan/azar/azar-db"
 	"github.com/go-playground/validator/v10"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Controller struct {
-	dcp *pools.PGXPool // database connection pool
+	dcp *pgxpool.Pool
 }
 
 type DBError struct {
@@ -22,14 +21,12 @@ type DBError struct {
 	Detail  string `json:"Detail"`
 }
 
-func (ctrl *Controller) parseRequest(r *http.Request, body interface{}) (*pgx.Conn, *db.Queries, error) {
+func (ctrl *Controller) parseRequest(r *http.Request, body interface{}) (*pgxpool.Conn, *db.Queries, error) {
 
-	c, err := ctrl.dcp.Get()
+	c, err := ctrl.dcp.Acquire(r.Context())
 	if err != nil {
 		return nil, nil, errors.New("internal server error")
 	}
-
-	defer ctrl.dcp.Put(c)
 
 	q := db.New(c)
 
