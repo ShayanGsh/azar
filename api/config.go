@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"time"
 
 	"github.com/kelseyhightower/envconfig"
 )
@@ -14,6 +15,7 @@ type Config struct {
 	Port int `json:"port" envconfig:"PORT" default:"5000"`
 	Host string `json:"host" envconfig:"HOST" default:"localhost"`
 	JWTSecret string `json:"secret" envconfig:"JWT_SECRET" default:"secret"`
+	JWTExpiration int `json:"expiration" default:"3600"` // in seconds
 	Database Database `json:"database"`
 
 	// ENV VARIABLES ONLY
@@ -48,6 +50,18 @@ func (c *Config) Address() (string) {
 	return buf.String()
 }
 
+func (c *Config) SetJWTExpiration(t time.Duration) {
+	c.JWTExpiration = int(t.Seconds())
+}
+
+func (c *Config) SetJWTExpirationFromSeconds(t int) {
+	c.JWTExpiration = t
+}
+
+func (c *Config) GetJWTExpiration() (time.Duration) {
+	return time.Duration(c.JWTExpiration) * time.Second
+}
+
 func LoadConfig(path string) (*Config, error) {
 	configFile, err := ioutil.ReadFile(path)
 	if err != nil {
@@ -59,7 +73,7 @@ func LoadConfig(path string) (*Config, error) {
 	if err != nil {
 		return nil, err
 	}
-
+	config.SetJWTExpiration(time.Duration(config.JWTExpiration) * time.Second)
 	return &config, nil
 }
 
