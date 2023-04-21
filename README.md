@@ -11,7 +11,8 @@ Azar is an open-source authentication server that provides a simple and secure w
 
 - [x] User registration and login
 - [x] Basic authentication using username and password
-- [ ] Write tests
+- [ ] Set up basic tests (unit and integration)
+- [ ] Performance and load testing
 - [ ] Request security using HTTPS
 - [ ] Securing endpoints using JWT
 - [ ] User management (CRUD)
