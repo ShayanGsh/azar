@@ -9,7 +9,6 @@ import (
 	"github.com/Klaushayan/azar/api/controllers"
 	"github.com/Klaushayan/azar/azar-db"
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/jwtauth/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
 )
@@ -17,7 +16,7 @@ import (
 type Server struct {
 	Router *chi.Mux
 	Config *Config
-	JWTAuth *jwtauth.JWTAuth
+	JWTAuth *JWT
 	DB *pgxpool.Pool
 
 	// Controllers
@@ -30,7 +29,7 @@ func NewServer(c *Config) *Server {
 	s := &Server {
 		Router: chi.NewRouter(),
 		Config: c,
-		JWTAuth: jwtauth.New("HS256", []byte(c.JWTSecret), nil),
+		JWTAuth: NewJWT(c.JWTSecret),
 	}
 
 	s.createDBPool()
@@ -45,7 +44,7 @@ func (s *Server) setupRoutes() {
 	SetupMiddlewares(s.Router)
 
 	s.Router.Group(func(r chi.Router) {
-		AuthenticateAccess(r.(*chi.Mux), s.JWTAuth)
+		AuthenticateAccess(r.(*chi.Mux), s.JWTAuth.JWTAuth)
 	})
 
 	s.Router.Post("/login", s.UserControllers.Login)

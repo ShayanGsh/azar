@@ -9,10 +9,16 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/lestrrat-go/jwx/v2/jwt"
 )
+
+type JWT interface {
+	Encode(userID, username string) (string, jwt.Token, error)
+}
 
 type Controller struct {
 	dcp *pgxpool.Pool
+	jwt JWT
 }
 
 type DBError struct {

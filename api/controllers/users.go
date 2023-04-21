@@ -49,8 +49,12 @@ func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
 
 	v, _ := uc.VerifyUser(q, user)
 	if v {
-		ReplySuccess(rw, "success")
-		return
+		token, _, err := uc.jwt.Encode(user.Username, user.Email)
+		if err != nil {
+			ReplyError(rw, err, http.StatusInternalServerError)
+			return
+		}
+		ReplySuccess(rw, token, http.StatusOK)
 	}
 	ReplyError(rw, errors.New("invalid credentials"), http.StatusUnauthorized)
 }
