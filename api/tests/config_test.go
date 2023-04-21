@@ -3,6 +3,7 @@ package tests
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/Klaushayan/azar/api"
 	"github.com/stretchr/testify/assert"
@@ -43,18 +44,18 @@ func TestLoadConfig(t *testing.T) {
 
 func TestLoadConfigFromEnv(t *testing.T) {
 	var err error
-	config, err = api.LoadConfigFromEnv()
+	configEnv, err := api.LoadConfigFromEnv()
 	if err != nil {
 		t.Error(err)
 	}
-	assert.Equal(t, 5000, config.Port)
-	assert.Equal(t, "localhost", config.Host)
-	assert.Equal(t, "thetestingsecret", config.JWTSecret)
-	assert.Equal(t, "localhost", config.DatabaseHost)
-	assert.Equal(t, 5432, config.DatabasePort)
-	assert.Equal(t, "postgres", config.DatabaseUsername)
-	assert.Equal(t, "", config.DatabasePassword)
-	assert.Equal(t, "azar_test", config.DatabaseName)
+	assert.Equal(t, 5000, configEnv.Port)
+	assert.Equal(t, "localhost", configEnv.Host)
+	assert.Equal(t, "thetestingsecret", configEnv.JWTSecret)
+	assert.Equal(t, "localhost", configEnv.DatabaseHost)
+	assert.Equal(t, 5432, configEnv.DatabasePort)
+	assert.Equal(t, "postgres", configEnv.DatabaseUsername)
+	assert.Equal(t, "", configEnv.DatabasePassword)
+	assert.Equal(t, "azar_test", configEnv.DatabaseName)
 }
 
 func TestLoadConfigFromEnvWithMissingConfig(t *testing.T) {
@@ -75,4 +76,12 @@ func TestDatabaseConnString(t *testing.T) {
 func TestConfigAddress(t *testing.T) {
 	address := config.Address()
 	assert.Equal(t, "localhost:5000", address)
+}
+
+func TestSetGetExpiration(t *testing.T) {
+	assert.Equal(t, 1800, int(config.GetJWTExpiration().Seconds()))
+	config.SetJWTExpiration(3600 * time.Second)
+	assert.Equal(t, 3600, int(config.GetJWTExpiration().Seconds()))
+	config.SetJWTExpirationFromSeconds(1800)
+	assert.Equal(t, 1800, int(config.GetJWTExpiration().Seconds()))
 }
