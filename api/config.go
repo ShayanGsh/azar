@@ -72,5 +72,11 @@ func LoadConfigFromEnv() (*Config, error) {
 		return nil, err
 	}
 
+	config.Database.Host = config.DatabaseHost
+	config.Database.Port = config.DatabasePort
+	config.Database.Username = config.DatabaseUsername
+	config.Database.Password = config.DatabasePassword
+	config.Database.Name = config.DatabaseName
+
 	return &config, nil
 }
