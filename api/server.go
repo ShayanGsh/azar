@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
-
+	"log"
 
 	"github.com/Klaushayan/azar/api/controllers"
 	"github.com/Klaushayan/azar/azar-db"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
+	"github.com/pseidemann/finish"
 )
 
 type Server struct {
@@ -18,11 +19,13 @@ type Server struct {
 	Config *Config
 	JWTAuth *JWT
 	DB *pgxpool.Pool
+	Finish *finish.Finisher
+
+	started bool
 
 	// Controllers
 	UserControllers *controllers.UserController
 }
-
 
 
 func NewServer(c *Config) *Server {
@@ -87,9 +90,38 @@ func (s *Server) MigrationCheck() bool{
 }
 
 func (s *Server) Start() {
-	s.setupRoutes()
-	err := http.ListenAndServe(s.Config.Address(), s.Router)
-	if err != nil {
-		panic(err)
+	httpServer := &http.Server{
+		Addr: s.Config.Address(),
+		Handler: s.Router,
 	}
+	s.setupRoutes()
+
+	fin := finish.New()
+	fin.Add(httpServer)
+
+	go func() {
+		err := httpServer.ListenAndServe()
+		if err != nil {
+			s.Shutdown()
+			s.started = false
+			log.Println(err)
+		}
+	}()
+	s.Finish = fin
+	s.started = true
+	fin.Wait()
+}
+
+func (s *Server) IsRunning() bool {
+	return s.started
+}
+
+func (s *Server) Shutdown() {
+	s.DB.Close()
+	s.Finish.Trigger()
+	s.started = false
+}
+
+func (s *Server) Wait() {
+	s.Finish.Wait()
 }
