@@ -16,7 +16,7 @@ func setTestEnvs() {
 	os.Setenv("AZAR_DB_HOST", "localhost")
 	os.Setenv("AZAR_DB_PORT", "5432")
 	os.Setenv("AZAR_DB_USER", "postgres")
-	os.Setenv("AZAR_DB_PASS", "")
+	os.Setenv("AZAR_DB_PASS", "postgres")
 	os.Setenv("AZAR_DB_NAME", "azar_test")
 }
 
@@ -38,7 +38,7 @@ func TestLoadConfig(t *testing.T) {
 	assert.Equal(t, "localhost", config.Database.Host)
 	assert.Equal(t, 5432, config.Database.Port)
 	assert.Equal(t, "postgres", config.Database.Username)
-	assert.Equal(t, "", config.Database.Password)
+	assert.Equal(t, "postgres", config.Database.Password)
 	assert.Equal(t, "azar_test", config.Database.Name)
 }
 
@@ -54,7 +54,7 @@ func TestLoadConfigFromEnv(t *testing.T) {
 	assert.Equal(t, "localhost", configEnv.DatabaseHost)
 	assert.Equal(t, 5432, configEnv.DatabasePort)
 	assert.Equal(t, "postgres", configEnv.DatabaseUsername)
-	assert.Equal(t, "", configEnv.DatabasePassword)
+	assert.Equal(t, "postgres", configEnv.DatabasePassword)
 	assert.Equal(t, "azar_test", configEnv.DatabaseName)
 }
 
@@ -65,12 +65,12 @@ func TestLoadConfigFromEnvWithMissingConfig(t *testing.T) {
 
 func TestConfigConnString(t *testing.T) {
 	connString := config.ToConnString()
-	assert.Equal(t, "host=localhost port=5432 user=postgres password= dbname=azar_test sslmode=disable", connString)
+	assert.Equal(t, "host=localhost port=5432 user=postgres password=postgres dbname=azar_test sslmode=disable", connString)
 }
 
 func TestDatabaseConnString(t *testing.T) {
 	connString := config.Database.ToConnString()
-	assert.Equal(t, "host=localhost port=5432 user=postgres password= dbname=azar_test sslmode=disable", connString)
+	assert.Equal(t, "host=localhost port=5432 user=postgres password=postgres dbname=azar_test sslmode=disable", connString)
 }
 
 func TestConfigAddress(t *testing.T) {

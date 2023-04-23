@@ -8,6 +8,6 @@
         "port": 5432,
         "name": "azar_test",
         "username": "postgres",
-        "password": ""
+        "password": "postgres"
     }
 }
