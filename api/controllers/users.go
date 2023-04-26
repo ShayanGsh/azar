@@ -69,6 +69,21 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Release()
 
+	passwordStrength := GetPasswordStrength(user.Password)
+	// TODO: Add password strength check using the minimum requirements in the config file
+	if passwordStrength == VeryWeak {
+		ReplyError(rw, errors.New("password is too weak"), http.StatusForbidden)
+		return
+	}
+	hashedPassword, err := HashPassword(user.Password)
+
+	if err != nil {
+		ReplyError(rw, errors.New("password hashing failed"), http.StatusInternalServerError)
+		return
+	}
+
+	user.Password = hashedPassword
+
 	if err := q.AddUser(r.Context(), db.AddUserParams{
 		Username: user.Username,
 		Email:   pgtype.Text{String: user.Email},
@@ -89,16 +104,17 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) VerifyUser(queries *db.Queries, user User) (bool, error) {
-	var err error
-	ctx := context.Background()
-	if user.Username != "" {
-		err = queries.VerifyUser(ctx, db.VerifyUserParams{Username: user.Username, Password: user.Password})
-	}
 	if user.Email != "" {
-		err = queries.VerifyUserByEmail(ctx, db.VerifyUserByEmailParams{Email: pgtype.Text{String: user.Email}, Password: user.Password})
+		email := pgtype.Text{String: user.Email}
+		u, err := queries.GetUserByEmail(context.Background(), email)
+		if err != nil {
+			return false, err
+		}
+		return CheckPasswordHash(user.Password, u.Password), nil
 	}
+	u, err := queries.GetUserByUsername(context.Background(), user.Username)
 	if err != nil {
 		return false, err
 	}
-	return true, nil
+	return CheckPasswordHash(user.Password, u.Password), nil
 }
