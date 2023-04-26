@@ -60,6 +60,7 @@ func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
 			return
 		}
 		ReplySuccess(rw, token, http.StatusOK)
+		return
 	}
 	ReplyError(rw, errors.New("invalid credentials"), http.StatusUnauthorized)
 }
