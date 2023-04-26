@@ -49,7 +49,7 @@ func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
 
 	v, _ := uc.VerifyUser(q, user)
 	if v {
-		token, _, err := uc.jwt.Encode(user.Username, user.Email)
+		token, _, err := uc.jwt.Encode(user.Username, user.Username) //TODO: Add some sort of id (not the db id) to the token
 		if err != nil {
 			ReplyError(rw, err, http.StatusInternalServerError)
 			return
