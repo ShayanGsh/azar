@@ -43,7 +43,7 @@ func NewServer(c *Config) *Server {
 
 	s.createDBPool()
 
-	s.UserControllers = controllers.NewUserControllers(s.DB)
+	s.UserControllers = controllers.NewUserControllers(s.DB, s.JWTAuth)
 
 	return s
 }

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"net/http"
 	"regexp"
+	"time"
 
 	db "github.com/Klaushayan/azar/azar-db"
 	"github.com/go-playground/validator/v10"
@@ -15,7 +16,7 @@ import (
 )
 
 type JWT interface {
-	Encode(userID, username string) (string, jwt.Token, error)
+	Encode(userID, username string, expiration ...time.Duration) (string, jwt.Token, error)
 }
 
 type Controller struct {
@@ -29,7 +30,7 @@ type DBError struct {
 	Detail  string `json:"Detail"`
 }
 
-func (ctrl *Controller) parseRequest(r *http.Request, body interface{}) (*pgxpool.Conn, *db.Queries, error) {
+func (ctrl *Controller) parseRequest(r *http.Request, body any) (*pgxpool.Conn, *db.Queries, error) {
 
 	c, err := ctrl.dcp.Acquire(r.Context())
 	if err != nil {

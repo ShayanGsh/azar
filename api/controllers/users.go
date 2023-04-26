@@ -29,10 +29,11 @@ type UserController struct {
 	Controller
 }
 
-func NewUserControllers(dcp *pgxpool.Pool) *UserController {
+func NewUserControllers(dcp *pgxpool.Pool, jwt JWT) *UserController {
 	return &UserController{
 		Controller: Controller{
 			dcp: dcp,
+			jwt: jwt,
 		},
 	}
 }
@@ -47,7 +48,11 @@ func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Release()
 
-	v, _ := uc.VerifyUser(q, user)
+	v, err := uc.VerifyUser(q, user)
+	if err != nil {
+		ReplyError(rw, err, http.StatusInternalServerError)
+		return
+	}
 	if v {
 		token, _, err := uc.jwt.Encode(user.Username, user.Username) //TODO: Add some sort of id (not the db id) to the token
 		if err != nil {
