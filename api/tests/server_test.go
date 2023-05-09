@@ -72,15 +72,18 @@ func runPostgresContainer() testcontainers.Container {
 	return postgresContainer
 }
 
-func TestMigration(t *testing.T) {
+func getServer() *api.Server {
 	c, err := api.LoadConfig("config_example.json")
-
 	c.Database.Port = mappedPort.Int()
-
 	if err != nil {
-		t.Fatal(err)
+		log.Fatal(err)
 	}
 	s := api.NewServer(c)
+	return s
+}
+
+func TestMigration(t *testing.T) {
+	s := getServer()
 	b := s.MigrationCheck()
 	if !b {
 		t.Fatal("migration failed")
@@ -88,11 +91,7 @@ func TestMigration(t *testing.T) {
 }
 
 func TestStartingServer(t *testing.T) {
-	c, err := api.LoadConfig("config_example.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	s := api.NewServer(c)
+	s := getServer()
 
 	go func() {
 		s.Start()
