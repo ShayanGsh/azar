@@ -29,7 +29,7 @@ type UserController struct {
 	Controller
 }
 
-func NewUserControllers(dcp *pgxpool.Pool, jwt JWT) *UserController {
+func NewUserController(dcp *pgxpool.Pool, jwt JWT) *UserController {
 	return &UserController{
 		Controller: Controller{
 			dcp: dcp,
@@ -88,12 +88,10 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Password = hashedPassword
-
 	if err := q.AddUser(r.Context(), db.AddUserParams{
 		Username: user.Username,
 		Email:   pgtype.Text{String: user.Email},
-		Password: user.Password,
+		Password: hashedPassword,
 	}); err != nil {
 		dbe := uc.parseDBError(err)
 		log.Println(dbe)
