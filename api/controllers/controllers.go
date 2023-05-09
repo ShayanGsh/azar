@@ -97,10 +97,6 @@ func GetPasswordStrength(password string) PasswordStrength {
 	hasDigit := regexp.MustCompile(`\d`).MatchString(password)
 	hasSpecial := regexp.MustCompile(`[!@#$%^&*()]`).MatchString(password)
 
-	if length < 6 || !hasLower || !hasUpper || !hasDigit || !hasSpecial {
-		return VeryWeak
-	}
-
 	score := 0
 	if hasLower {
 		score++
