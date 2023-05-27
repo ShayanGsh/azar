@@ -48,6 +48,18 @@ func (ctrl *Controller) parseRequest(r *http.Request, body any) (*pgxpool.Conn, 
 	}
 	err = validator.New().Struct(body)
 	if err != nil {
+        for _, err := range err.(validator.ValidationErrors) {
+			// TODO: to clean up later
+            if err.Tag() == "min" {
+				return nil, nil, errors.New("password must be at least 8 characters long")
+            }
+			if err.Tag() == "email" {
+				return nil, nil, errors.New("invalid email address")
+			}
+			if err.Tag() == "required" {
+				return nil, nil, errors.New("missing required field")
+			}
+        }
 		return nil, nil, errors.New("invalid request body")
 	}
 	return c, q, nil
