@@ -18,23 +18,24 @@ func RunMigration(m *migrate.FileMigrationSource, db *sql.DB, d migrate.Migratio
 	if err != nil {
 		return err
 	}
-	log.Printf("Applied %d migrations!\n", n)
+	log.Printf("Applied %d migrations", n)
 	return nil
 }
 
 func IsMigrated(m *migrate.FileMigrationSource, db *sql.DB) (bool, error) {
-	pending, err := m.FindMigrations()
+	records, err := m.FindMigrations()
+
 	if err != nil {
 		return false, err
 	}
-	applied, err := migrate.GetMigrationRecords(db, "postgres")
+	if len(records) == 0 {
+		return false, nil
+	}
+	n, err := migrate.ExecMax(db, "postgres", m, migrate.Up, len(records))
 	if err != nil {
 		return false, err
 	}
-	if len(pending) == len(applied) {
-		return true, nil
-	}
-	return false, nil
+	return n == len(records), nil
 }
 
 
