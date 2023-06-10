@@ -14,7 +14,7 @@ type UpdateUser struct {
 	NewUsername string `json:"new_username" validate:"omitempty,min=1,max=100"`
 	Email   string `json:"email" validate:"required_without=Username,omitempty,email"`
 	NewEmail    string `json:"new_email" validate:"omitempty,email"`
-	OldPassword string `json:"old_password" validate:"required,min=8"`
+	OldPassword string `json:"old_password" validate:"required"`
 	NewPassword string `json:"new_password" validate:"min=8"`
 }
 
@@ -60,7 +60,12 @@ func (uc *UserController) AddUser(q *db.Queries, user User, context context.Cont
 
 func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, context context.Context) error {
     // Get the user by username or email
-    existingUser, err := uc.GetUser(q, updateUser, context)
+    user := User{
+        Username: updateUser.Username,
+        Email:    updateUser.Email,
+        Password: updateUser.OldPassword,
+    }
+    existingUser, err := uc.GetUser(q, user, context)
     if err != nil {
         return err
     }
@@ -88,16 +93,16 @@ func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, conte
     return nil
 }
 
-func (uc *UserController) GetUser(q *db.Queries, updateUser UpdateUser, context context.Context) (db.User, error) {
+func (uc *UserController) GetUser(q *db.Queries, user User, context context.Context) (db.User, error) {
     var existingUser db.User
-    if updateUser.Username != "" {
-        u, err := q.GetUserByUsername(context, updateUser.Username)
+    if user.Username != "" {
+        u, err := q.GetUserByUsername(context, user.Username)
         if err != nil {
             return existingUser, err
         }
         existingUser = u
-    } else if updateUser.Email != "" {
-        u, err := q.GetUserByEmail(context, pgtype.Text{String: updateUser.Email})
+    } else if user.Email != "" {
+        u, err := q.GetUserByEmail(context, pgtype.Text{String: user.Email})
         if err != nil {
             return existingUser, err
         }
