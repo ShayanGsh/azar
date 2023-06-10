@@ -60,13 +60,13 @@ func (uc *UserController) AddUser(q *db.Queries, user User, context context.Cont
 
 func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, context context.Context) error {
     // Get the user by username or email
-    existingUser, err := uc.getUser(q, updateUser, context)
+    existingUser, err := uc.GetUser(q, updateUser, context)
     if err != nil {
         return err
     }
 
     // Update the user
-    uc.updateUserFields(updateUser, &existingUser)
+    uc.UpdateUserFields(updateUser, &existingUser)
 
     err = q.UpdateUser(context, db.UpdateUserParams{
         ID:       existingUser.ID,
@@ -79,7 +79,7 @@ func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, conte
 
     // Update the user's password
     if updateUser.NewPassword != "" {
-        err = uc.updatePassword(q, updateUser, existingUser, context)
+        err = uc.UpdatePassword(q, updateUser, existingUser, context)
         if err != nil {
             return err
         }
@@ -88,7 +88,7 @@ func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, conte
     return nil
 }
 
-func (uc *UserController) getUser(q *db.Queries, updateUser UpdateUser, context context.Context) (db.User, error) {
+func (uc *UserController) GetUser(q *db.Queries, updateUser UpdateUser, context context.Context) (db.User, error) {
     var existingUser db.User
     if updateUser.Username != "" {
         u, err := q.GetUserByUsername(context, updateUser.Username)
@@ -108,7 +108,7 @@ func (uc *UserController) getUser(q *db.Queries, updateUser UpdateUser, context 
     return existingUser, nil
 }
 
-func (uc *UserController) updateUserFields(updateUser UpdateUser, existingUser *db.User) {
+func (uc *UserController) UpdateUserFields(updateUser UpdateUser, existingUser *db.User) {
     if updateUser.NewUsername != "" {
         existingUser.Username = updateUser.NewUsername
     }
@@ -125,7 +125,7 @@ func (uc *UserController) updateUserFields(updateUser UpdateUser, existingUser *
     }
 }
 
-func (uc *UserController) updatePassword(q *db.Queries, updateUser UpdateUser, existingUser db.User, context context.Context) error {
+func (uc *UserController) UpdatePassword(q *db.Queries, updateUser UpdateUser, existingUser db.User, context context.Context) error {
     p, err := HashPassword(updateUser.NewPassword)
     if err != nil {
         return err
