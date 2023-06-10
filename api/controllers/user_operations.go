@@ -50,7 +50,7 @@ func (uc *UserController) AddUser(q *db.Queries, user User, context context.Cont
 
     new_user := db.AddUserParams{
         Username: user.Username,
-        Email:    pgtype.Text{String: user.Email},
+        Email:    pgtype.Text{String: user.Email, Valid: true},
         Password: user.Password,
     }
     err := q.AddUser(context, new_user)
@@ -121,7 +121,7 @@ func (uc *UserController) GetUser(q *db.Queries, user User, context context.Cont
         }
         existingUser = u
     } else if user.Email != "" {
-        u, err := q.GetUserByEmail(context, pgtype.Text{String: user.Email})
+        u, err := q.GetUserByEmail(context, pgtype.Text{String: user.Email, Valid: true})
         if err != nil {
             return existingUser, err
         }
