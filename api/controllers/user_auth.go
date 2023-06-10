@@ -24,7 +24,7 @@ type UserController struct {
 func NewUserController(dcp *pgxpool.Pool, jwt JWT) *UserController {
 	return &UserController{
 		Controller: Controller{
-			dcp: dcp,
+			DatabaseConnectionPool: dcp,
 			jwt: jwt,
 		},
 	}
