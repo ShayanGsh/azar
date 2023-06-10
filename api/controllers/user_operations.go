@@ -47,15 +47,34 @@ func (uc *UserController) UpdateUserCred(rw http.ResponseWriter, r *http.Request
 }
 
 func (uc *UserController) AddUser(q *db.Queries, user User, context context.Context) error {
-	err := q.AddUser(context, db.AddUserParams{
-		Username: user.Username,
-		Email:    pgtype.Text{String: user.Email},
-		Password: user.Password,
-	})
+
+    new_user := db.AddUserParams{
+        Username: user.Username,
+        Email:    pgtype.Text{String: user.Email},
+        Password: user.Password,
+    }
+    err := q.AddUser(context, new_user)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func (uc *UserController) AddUserWithHash(q *db.Queries, user User, context context.Context) error {
+
+    hashed, err := HashPassword(user.Password)
+    if err != nil {
+        return err
+    }
+
+    user.Password = hashed
+
+    uc.AddUser(q, user, context)
+    if err != nil {
+        return err
+    }
+
+    return nil
 }
 
 func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, context context.Context) error {
