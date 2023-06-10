@@ -119,7 +119,6 @@ func TestStartingServer(t *testing.T) {
 func TestRegisterHandler(t *testing.T) {
 	s := getServer()
 	uc = controllers.NewUserController(s.DB, s.JWTAuth)
-	log.Println(s.DB.Ping(context.Background()))
     req, err := http.NewRequest("GET", "/register", nil)
     if err != nil {
         t.Fatal(err)
