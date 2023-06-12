@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	db "github.com/Klaushayan/azar/azar-db"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -96,6 +97,7 @@ func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, conte
         ID:       existingUser.ID,
         Username: existingUser.Username,
         Email:    existingUser.Email,
+        UpdatedAt: pgtype.Timestamp{Time: time.Now(), Valid: true},
     })
     if err != nil {
         return err
@@ -137,7 +139,7 @@ func (uc *UserController) UpdateUserFields(updateUser UpdateUser, existingUser *
         existingUser.Username = updateUser.NewUsername
     }
     if updateUser.NewEmail != "" {
-        existingUser.Email = pgtype.Text{String: updateUser.NewEmail}
+        existingUser.Email = pgtype.Text{String: updateUser.NewEmail, Valid: true}
     }
     if updateUser.NewPassword != "" {
         // hash the password
