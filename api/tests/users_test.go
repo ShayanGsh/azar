@@ -203,3 +203,27 @@ func TestUpdateUserNotFound(t *testing.T) {
 		t.Fatalf("expected error updating user, but got nil")
 	}
 }
+
+func TestDeleteUser(t *testing.T) {
+	ctx := context.Background()
+	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Release()
+
+	q := db.New(c)
+	user := controllers.User{
+		Username: "test_user1",
+	}
+
+	err = uc.DeleteUser(q, user, ctx)
+	if err != nil {
+		t.Fatalf("error deleting user: %v", err)
+	}
+
+	_, err = uc.GetUser(q, user, ctx)
+	if err == nil {
+		t.Fatalf("expected error getting user, but got nil")
+	}
+}
