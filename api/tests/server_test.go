@@ -105,11 +105,11 @@ func TestStartingServer(t *testing.T) {
 	}()
 
 	go func() {
-		time.Sleep(5 * time.Second)
+		time.Sleep(2 * time.Second)
 		s.Shutdown()
 	}()
 
-	time.Sleep(10 * time.Second)
+	time.Sleep(3 * time.Second)
 
 	if s.IsRunning() {
 		t.Fatal("server should be stopped")
