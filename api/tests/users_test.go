@@ -21,6 +21,8 @@ var first_user = controllers.User{
 	Email: "testing@gmail.com",
 }
 
+var token string
+
 func TestAddUser(t *testing.T) {
 	ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
@@ -296,3 +298,38 @@ func TestPasswordFailRegisterHandler(t *testing.T) {
 			parsed, expected)
 	}
 }
+
+func TestLoginHandler(t *testing.T) {
+	req, err := http.NewRequest("GET", "/login", nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	req.Body = ioutil.NopCloser(bytes.NewBufferString(`{"username":"test","password":"Testing123"}`))
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(uc.Login)
+
+	handler.ServeHTTP(rr, req)
+
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("handler returned wrong status code: got %v, want %v",
+			status, http.StatusOK)
+	}
+
+	expected := controllers.ReplyMessage{
+		Success: true,
+		Message: "",
+		Status:  http.StatusOK,
+		Error:   nil,
+	}
+
+	parsed := controllers.ReplyMessage{}
+	json.Unmarshal(rr.Body.Bytes(), &parsed)
+
+	token = parsed.Message
+
+	if !parsed.Success {
+		t.Errorf("handler returned unexpected body: got %v, want %v",
+			parsed, expected)
+	}
+}
+
