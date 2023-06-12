@@ -132,3 +132,74 @@ func TestGetUserNotFound(t *testing.T) {
 		t.Fatalf("expected error getting user, but got nil")
 	}
 }
+
+func TestUpdateUser(t *testing.T) {
+	ctx := context.Background()
+	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Release()
+
+	q := db.New(c)
+	user := controllers.UpdateUser{
+		Username: "test_user1",
+		NewEmail: "testing1@gmail.com",
+		NewPassword: "test12345",
+	}
+
+	err = uc.UpdateUser(q, user, ctx)
+	if err != nil {
+		t.Fatalf("error updating user: %v", err)
+	}
+
+	result, err := uc.GetUser(q, controllers.User{Username: user.Username}, ctx)
+	if err != nil {
+		t.Fatalf("error getting user: %v", err)
+	}
+
+	if result.Email.String != user.NewEmail {
+		t.Errorf("expected email %s, but got %s", user.NewEmail, result.Email.String)
+	}
+
+	if controllers.CheckPasswordHash(user.NewPassword, result.Password) != true {
+		t.Errorf("passwords do not match")
+	}
+}
+
+func TestUpdateUserNoUsernameOrEmail(t *testing.T) {
+	ctx := context.Background()
+	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Release()
+
+	q := db.New(c)
+	user := controllers.UpdateUser{}
+
+	err = uc.UpdateUser(q, user, ctx)
+	if err == nil {
+		t.Fatalf("expected error updating user, but got nil")
+	}
+}
+
+func TestUpdateUserNotFound(t *testing.T) {
+	ctx := context.Background()
+	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Release()
+
+	q := db.New(c)
+	user := controllers.UpdateUser{
+		Username: "test_user2",
+		Email: "testing1@gmail.com",
+	}
+
+	err = uc.UpdateUser(q, user, ctx)
+	if err == nil {
+		t.Fatalf("expected error updating user, but got nil")
+	}
+}
