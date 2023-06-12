@@ -166,3 +166,14 @@ func (uc *UserController) UpdatePassword(q *db.Queries, updateUser UpdateUser, e
     return nil
 }
 
+func (uc *UserController) DeleteUser(q *db.Queries, user User, context context.Context) error {
+    existingUser, err := uc.GetUser(q, user, context)
+    if err != nil {
+        return err
+    }
+    err = q.DeleteUser(context, existingUser.ID)
+    if err != nil {
+        return err
+    }
+    return nil
+}
