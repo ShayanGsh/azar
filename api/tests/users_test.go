@@ -327,7 +327,7 @@ func TestLoginHandler(t *testing.T) {
 
 	token = parsed.Message
 
-	if !parsed.Success {
+	if parsed.Status != expected.Status {
 		t.Errorf("handler returned unexpected body: got %v, want %v",
 			parsed, expected)
 	}
