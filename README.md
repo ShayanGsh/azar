@@ -12,11 +12,12 @@ Azar is an open-source authentication server that provides a simple and secure w
 - [x] User registration and login
 - [x] Basic authentication using username and password
 - [x] Set up basic tests (unit and integration)
+- [x] User management (CRUD)
+- [ ] Admin management (CRUD)
 - [ ] Set up CI/CD pipeline
 - [ ] Implement migrations (and rollbacks)
 - [ ] Performance and load testing
 - [ ] Securing endpoints using JWT
-- [ ] User management (CRUD)
 - [ ] User groups and roles (CRUD)
 - [ ] User permissions (CRUD)
 - [ ] OAuth2
