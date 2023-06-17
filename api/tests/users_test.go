@@ -255,7 +255,6 @@ func TestRegisterHandler(t *testing.T) {
 		Success: true,
 		Message: "success",
 		Status:  http.StatusCreated,
-		Error:   nil,
 	}
 
 	parsed := controllers.ReplyMessage{}
@@ -287,7 +286,6 @@ func TestPasswordFailRegisterHandler(t *testing.T) {
 		Success: false,
 		Message: "password must be at least 8 characters long",
 		Status:  http.StatusInternalServerError,
-		Error:   nil,
 	}
 
 	parsed := controllers.ReplyMessage{}
@@ -319,7 +317,6 @@ func TestLoginHandler(t *testing.T) {
 		Success: true,
 		Message: "",
 		Status:  http.StatusOK,
-		Error:   nil,
 	}
 
 	parsed := controllers.ReplyMessage{}
@@ -332,4 +329,3 @@ func TestLoginHandler(t *testing.T) {
 			parsed, expected)
 	}
 }
-
