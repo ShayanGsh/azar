@@ -20,19 +20,23 @@ func NewJWT(secret string) *JWT {
 }
 
 func (j *JWT) Encode(userID, username string, expiration ...time.Duration) (string, jwt.Token, error) {
+
+	var exp time.Duration
+	if len(expiration) > 0 {
+		exp = expiration[0]
+	} else {
+		exp = j.DefaultExpiration
+	}
+
 	t, tokenString, err := j.JWTAuth.Encode(map[string]interface{} {
 		"id": userID,
 		"username": username,
+		"iat": time.Now().Unix(),
+		"exp": time.Now().Add(exp).Unix(),
 	})
 
 	if err != nil {
 		return "", nil, err
-	}
-
-	if len(expiration) > 0 {
-		t.Expiration().Add(expiration[0])
-	} else {
-		t.Expiration().Add(time.Hour * 24)
 	}
 
 	return tokenString, t, nil

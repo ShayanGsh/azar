@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"time"
 
 	db "github.com/Klaushayan/azar/azar-db"
 	"github.com/jackc/pgx/v5/pgtype"
@@ -14,7 +15,7 @@ type UpdateUser struct {
 	NewUsername string `json:"new_username" validate:"omitempty,min=1,max=100"`
 	Email   string `json:"email" validate:"required_without=Username,omitempty,email"`
 	NewEmail    string `json:"new_email" validate:"omitempty,email"`
-	OldPassword string `json:"old_password" validate:"required,min=8"`
+	OldPassword string `json:"old_password" validate:"required"`
 	NewPassword string `json:"new_password" validate:"min=8"`
 }
 
@@ -47,31 +48,56 @@ func (uc *UserController) UpdateUserCred(rw http.ResponseWriter, r *http.Request
 }
 
 func (uc *UserController) AddUser(q *db.Queries, user User, context context.Context) error {
-	err := q.AddUser(context, db.AddUserParams{
-		Username: user.Username,
-		Email:    pgtype.Text{String: user.Email},
-		Password: user.Password,
-	})
+
+    new_user := db.AddUserParams{
+        Username: user.Username,
+        Email:    pgtype.Text{String: user.Email, Valid: true},
+        Password: user.Password,
+    }
+    err := q.AddUser(context, new_user)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
+func (uc *UserController) AddUserWithHash(q *db.Queries, user User, context context.Context) error {
+
+    hashed, err := HashPassword(user.Password)
+    if err != nil {
+        return err
+    }
+
+    user.Password = hashed
+
+    uc.AddUser(q, user, context)
+    if err != nil {
+        return err
+    }
+
+    return nil
+}
+
 func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, context context.Context) error {
     // Get the user by username or email
-    existingUser, err := uc.getUser(q, updateUser, context)
+    user := User{
+        Username: updateUser.Username,
+        Email:    updateUser.Email,
+        Password: updateUser.OldPassword,
+    }
+    existingUser, err := uc.GetUser(q, user, context)
     if err != nil {
         return err
     }
 
     // Update the user
-    uc.updateUserFields(updateUser, &existingUser)
+    uc.UpdateUserFields(updateUser, &existingUser)
 
     err = q.UpdateUser(context, db.UpdateUserParams{
         ID:       existingUser.ID,
         Username: existingUser.Username,
         Email:    existingUser.Email,
+        UpdatedAt: pgtype.Timestamp{Time: time.Now(), Valid: true},
     })
     if err != nil {
         return err
@@ -79,7 +105,7 @@ func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, conte
 
     // Update the user's password
     if updateUser.NewPassword != "" {
-        err = uc.updatePassword(q, updateUser, existingUser, context)
+        err = uc.UpdatePassword(q, updateUser, existingUser, context)
         if err != nil {
             return err
         }
@@ -88,16 +114,16 @@ func (uc *UserController) UpdateUser(q *db.Queries, updateUser UpdateUser, conte
     return nil
 }
 
-func (uc *UserController) getUser(q *db.Queries, updateUser UpdateUser, context context.Context) (db.User, error) {
+func (uc *UserController) GetUser(q *db.Queries, user User, context context.Context) (db.User, error) {
     var existingUser db.User
-    if updateUser.Username != "" {
-        u, err := q.GetUserByUsername(context, updateUser.Username)
+    if user.Username != "" {
+        u, err := q.GetUserByUsername(context, user.Username)
         if err != nil {
             return existingUser, err
         }
         existingUser = u
-    } else if updateUser.Email != "" {
-        u, err := q.GetUserByEmail(context, pgtype.Text{String: updateUser.Email})
+    } else if user.Email != "" {
+        u, err := q.GetUserByEmail(context, pgtype.Text{String: user.Email, Valid: true})
         if err != nil {
             return existingUser, err
         }
@@ -108,12 +134,12 @@ func (uc *UserController) getUser(q *db.Queries, updateUser UpdateUser, context 
     return existingUser, nil
 }
 
-func (uc *UserController) updateUserFields(updateUser UpdateUser, existingUser *db.User) {
+func (uc *UserController) UpdateUserFields(updateUser UpdateUser, existingUser *db.User) {
     if updateUser.NewUsername != "" {
         existingUser.Username = updateUser.NewUsername
     }
     if updateUser.NewEmail != "" {
-        existingUser.Email = pgtype.Text{String: updateUser.NewEmail}
+        existingUser.Email = pgtype.Text{String: updateUser.NewEmail, Valid: true}
     }
     if updateUser.NewPassword != "" {
         // hash the password
@@ -125,7 +151,7 @@ func (uc *UserController) updateUserFields(updateUser UpdateUser, existingUser *
     }
 }
 
-func (uc *UserController) updatePassword(q *db.Queries, updateUser UpdateUser, existingUser db.User, context context.Context) error {
+func (uc *UserController) UpdatePassword(q *db.Queries, updateUser UpdateUser, existingUser db.User, context context.Context) error {
     p, err := HashPassword(updateUser.NewPassword)
     if err != nil {
         return err
@@ -140,3 +166,14 @@ func (uc *UserController) updatePassword(q *db.Queries, updateUser UpdateUser, e
     return nil
 }
 
+func (uc *UserController) DeleteUser(q *db.Queries, user User, context context.Context) error {
+    existingUser, err := uc.GetUser(q, user, context)
+    if err != nil {
+        return err
+    }
+    err = q.DeleteUser(context, existingUser.ID)
+    if err != nil {
+        return err
+    }
+    return nil
+}

@@ -20,7 +20,7 @@ type JWT interface {
 }
 
 type Controller struct {
-	dcp *pgxpool.Pool
+	DatabaseConnectionPool *pgxpool.Pool
 	jwt JWT
 }
 
@@ -32,7 +32,7 @@ type DBError struct {
 
 func (ctrl *Controller) parseRequest(r *http.Request, body any) (*pgxpool.Conn, *db.Queries, error) {
 
-	c, err := ctrl.dcp.Acquire(r.Context())
+	c, err := ctrl.DatabaseConnectionPool.Acquire(r.Context())
 	if err != nil {
 		return nil, nil, errors.New("internal server error")
 	}
