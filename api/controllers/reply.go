@@ -9,7 +9,6 @@ type ReplyMessage struct {
 	Success bool
 	Message string
 	Status  int
-	Error   error
 }
 
 func Reply(rw http.ResponseWriter, message ReplyMessage) {
@@ -23,7 +22,6 @@ func ReplyError(rw http.ResponseWriter, err error, status int) {
 		Success: false,
 		Message: err.Error(),
 		Status:  status,
-		Error:   err,
 	})
 }
 
