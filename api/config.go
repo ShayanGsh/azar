@@ -62,21 +62,6 @@ func (c *Config) GetJWTExpiration() (time.Duration) {
 	return time.Duration(c.JWTExpiration) * time.Second
 }
 
-func NewConfig() (*Config) {
-	return &Config{
-		Port: 5000,
-		Host: "localhost",
-		JWTSecret: "secret",
-		JWTExpiration: 3600,
-		Database: Database{
-			Host: "localhost",
-			Port: 5432,
-			Username: "postgres",
-			Password: "postgres",
-			Name: "azar",},
-	}
-}
-
 func LoadConfig(path string) (*Config, error) {
 	configFile, err := ioutil.ReadFile(path)
 	if err != nil {
