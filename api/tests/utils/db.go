@@ -5,10 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"strconv"
 	"time"
 
-	"github.com/Klaushayan/azar/api"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
 )
@@ -54,15 +52,4 @@ func RunPostgresContainer() (testcontainers.Container, string) {
 	time.Sleep(5 * time.Second)
 
 	return postgresContainer, mappedPort.Port()
-}
-
-func GetServer(port string, config api.Config) *api.Server {
-	intPort, err := strconv.Atoi(port)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	config.Port = intPort
-	s := api.NewServer(&config)
-	return s
 }
