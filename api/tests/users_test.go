@@ -2,7 +2,6 @@ package tests
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
@@ -24,7 +23,6 @@ var first_user = controllers.User{
 var token string
 
 func TestAddUser(t *testing.T) {
-	ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -40,7 +38,6 @@ func TestAddUser(t *testing.T) {
 
 
 func TestGetUserByUsername(t *testing.T) {
-    ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -72,7 +69,6 @@ func TestGetUserByUsername(t *testing.T) {
 }
 
 func TestGetUserByEmail(t *testing.T) {
-    ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -103,7 +99,6 @@ func TestGetUserByEmail(t *testing.T) {
 }
 
 func TestGetUserNoUsernameOrEmail(t *testing.T) {
-    ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -121,7 +116,6 @@ func TestGetUserNoUsernameOrEmail(t *testing.T) {
 }
 
 func TestGetUserNotFound(t *testing.T) {
-	ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -141,7 +135,6 @@ func TestGetUserNotFound(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
-	ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -175,7 +168,6 @@ func TestUpdateUser(t *testing.T) {
 }
 
 func TestUpdateUserNoUsernameOrEmail(t *testing.T) {
-	ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -192,7 +184,6 @@ func TestUpdateUserNoUsernameOrEmail(t *testing.T) {
 }
 
 func TestUpdateUserNotFound(t *testing.T) {
-	ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
@@ -212,7 +203,6 @@ func TestUpdateUserNotFound(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-	ctx := context.Background()
 	c, err := uc.DatabaseConnectionPool.Acquire(ctx)
 	if err != nil {
 		t.Fatal(err)
