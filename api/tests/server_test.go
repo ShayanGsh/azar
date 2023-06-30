@@ -13,7 +13,7 @@ import (
 
 var ctx = context.Background()
 var uc *controllers.UserController
-var s *api.Server
+var s *api.APIServer
 
 // postgres
 
@@ -22,7 +22,7 @@ func TestMain(m *testing.M) {
 	postgresContainer, mappedPort := test_utils.RunPostgresContainer()
 	defer postgresContainer.Terminate(ctx)
 	c := test_utils.GenerateConfig(mappedPort)
-	s = api.NewServer(c)
+	s = api.NewAPIServer(c)
 	uc = controllers.NewUserController(s.DB, s.JWTAuth)
 
 	// run tests
@@ -41,7 +41,7 @@ func TestMigration(t *testing.T) {
 
 func TestStartingServer(t *testing.T) {
 	c := test_utils.GenerateConfig("5432")
-	server := api.NewServer(c)
+	server := api.NewAPIServer(c)
 	go func() {
 		server.Start()
 	}()

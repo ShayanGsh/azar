@@ -25,7 +25,7 @@ func TestMain(m *testing.M) {
 	postgresContainer, mappedPort := test_utils.RunPostgresContainer()
 	defer postgresContainer.Terminate(ctx)
 	c := test_utils.GenerateConfig(mappedPort)
-	s := api.NewServer(c)
+	s := api.NewAPIServer(c)
 
 	s.MigrationCheck()
 	uc = controllers.NewUserController(s.DB, s.JWTAuth)
