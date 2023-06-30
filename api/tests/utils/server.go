@@ -6,13 +6,14 @@ import (
 	"github.com/Klaushayan/azar/api"
 )
 
-func GetServer(port string, config api.Config) *api.Server {
-	intPort, err := strconv.Atoi(port)
+func GenerateConfig(port string) *api.Config {
+	var config api.Config = *api.NewConfig()
+	mappedPort, err := strconv.Atoi(port)
 	if err != nil {
 		panic(err)
 	}
+	config.Database.Port = mappedPort
+	config.Database.Name = "azar_test"
 
-	config.Port = intPort
-	s := api.NewServer(&config)
-	return s
+	return &config
 }
