@@ -4,11 +4,9 @@ import (
 	"bytes"
 	"context"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os"
-	"strconv"
 	"testing"
 
 	"github.com/Klaushayan/azar/api"
@@ -26,15 +24,9 @@ func TestMain(m *testing.M) {
 	// setup
 	postgresContainer, mappedPort := test_utils.RunPostgresContainer()
 	defer postgresContainer.Terminate(ctx)
-	c := api.NewConfig()
-	c.Database.Name = "azar_test"
-	port, err := strconv.Atoi(mappedPort)
-	if err != nil {
-		log.Fatal(err)
-	}
-	c.Database.Port = port
+	c := test_utils.GenerateConfig(mappedPort)
+	s := api.NewServer(c)
 
-	s := test_utils.GetServer(mappedPort, *c)
 	s.MigrationCheck()
 	uc = controllers.NewUserController(s.DB, s.JWTAuth)
 
@@ -43,8 +35,6 @@ func TestMain(m *testing.M) {
 
 	// teardown
 	os.Exit(exitCode)
-
-	m.Run()
 }
 
 func TestSQLInjection(t *testing.T) {
