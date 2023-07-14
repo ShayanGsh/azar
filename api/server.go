@@ -55,20 +55,6 @@ func NewAPIServer(c *Config) *APIServer {
 	return s
 }
 
-// SetupRoutes sets up the routes and middleware for the server.
-// The routes are grouped by authentication level. The JWTAuth
-// middleware is used to verify the token in the header, and
-// the AuthenticateAccess middleware is used to verify that the
-// user has the correct access level to access the route.
-func (s *APIServer) setupRoutes() {
-	SetupMiddlewares(s.Router)
-	s.Router.Group(func(r chi.Router) {
-		AuthenticateAccess(r.(*chi.Mux), s.JWTAuth.JWTAuth)
-	})
-	s.Router.Post("/login", s.UserControllers.Login)
-	s.Router.Post("/register", s.UserControllers.Register)
-}
-
 // createDBPool creates a connection pool to the database.
 func (s *APIServer) createDBPool() {
 	connConfig, err := pgxpool.ParseConfig(s.Config.ToConnString())
@@ -120,7 +106,7 @@ func (s *APIServer) Start() error {
 		Addr: s.Config.Address(),
 		Handler: s.Router,
 	}
-	s.setupRoutes()
+	SetRoutes(s.Router, s)
 
 	fin := finish.New()
 	fin.Add(httpServer)
