@@ -13,6 +13,7 @@ import (
 	"github.com/Klaushayan/azar/api/controllers"
 	"github.com/Klaushayan/azar/api/tests/utils"
 	db "github.com/Klaushayan/azar/azar-db"
+	"github.com/Klaushayan/azar/core"
 )
 
 // TODO: format this file
@@ -77,12 +78,12 @@ func TestSQLInjection(t *testing.T) {
 
 	q := db.New(c)
 
-	user := controllers.User{
+	user := core.UserData{
 		Username: "test",
 		Password: "Testing123",
 	}
 
-	if _, err = uc.GetUser(q, user, ctx); err != nil {
+	if _, err = core.GetUser(q, user, ctx); err != nil {
 		t.Fatal(err) // if the users table is dropped, this will fail
 	}
 }

@@ -7,15 +7,11 @@ import (
 	"net/http"
 
 	"github.com/Klaushayan/azar/azar-db"
+	"github.com/Klaushayan/azar/core"
+	"github.com/Klaushayan/azar/core/utils"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
-
-type User struct {
-    Username    string `json:"username" validate:"required_without=Email,omitempty,min=1,max=100"`
-    Email   string `json:"email" validate:"required_without=Username,omitempty,email"`
-    Password string `json:"password" validate:"required,min=8"`
-}
 
 type UserController struct {
 	Controller
@@ -31,7 +27,7 @@ func NewUserController(dcp *pgxpool.Pool, jwt JWT) *UserController {
 }
 
 func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
-	var user User
+	var user core.UserData
 	c, q, err := uc.parseRequest(r, &user)
 
 	if err != nil {
@@ -58,7 +54,7 @@ func (uc *UserController) Login(rw http.ResponseWriter, r *http.Request) {
 }
 
 func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
-	var user User
+	var user core.UserData
 	c, q, err := uc.parseRequest(r, &user)
 
 	if err != nil {
@@ -67,13 +63,13 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 	}
 	defer c.Release()
 
-	passwordStrength := GetPasswordStrength(user.Password)
+	passwordStrength := utils.GetPasswordStrength(user.Password)
 	// TODO: Add password strength check using the minimum requirements in the config file
-	if passwordStrength == VeryWeak {
+	if passwordStrength == utils.VeryWeak {
 		ReplyError(rw, errors.New("password is too weak"), http.StatusForbidden)
 		return
 	}
-	hashedPassword, err := HashPassword(user.Password)
+	hashedPassword, err := utils.HashPassword(user.Password)
 
 	if err != nil {
 		ReplyError(rw, errors.New("password hashing failed"), http.StatusInternalServerError)
@@ -99,18 +95,18 @@ func (uc *UserController) Register(rw http.ResponseWriter, r *http.Request) {
 	ReplySuccess(rw, "success", http.StatusCreated)
 }
 
-func (uc *UserController) VerifyUser(queries *db.Queries, user User) (bool, error) {
+func (uc *UserController) VerifyUser(queries *db.Queries, user core.UserData) (bool, error) {
 	if user.Email != "" {
 		email := pgtype.Text{String: user.Email}
 		u, err := queries.GetUserByEmail(context.Background(), email)
 		if err != nil {
 			return false, err
 		}
-		return CheckPasswordHash(user.Password, u.Password), nil
+		return utils.CheckPasswordHash(user.Password, u.Password), nil
 	}
 	u, err := queries.GetUserByUsername(context.Background(), user.Username)
 	if err != nil {
 		return false, err
 	}
-	return CheckPasswordHash(user.Password, u.Password), nil
+	return utils.CheckPasswordHash(user.Password, u.Password), nil
 }
