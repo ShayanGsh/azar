@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"log"
 
-	"github.com/Klaushayan/azar/api/controllers"
-	"github.com/Klaushayan/azar/azar-db"
+	"github.com/ShayanGsh/azar/api/controllers"
+	"github.com/ShayanGsh/azar/azar-db"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"

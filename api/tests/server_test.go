@@ -6,9 +6,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Klaushayan/azar/api"
-	"github.com/Klaushayan/azar/api/controllers"
-	"github.com/Klaushayan/azar/api/tests/utils"
+	"github.com/ShayanGsh/azar/api"
+	"github.com/ShayanGsh/azar/api/controllers"
+	"github.com/ShayanGsh/azar/api/tests/utils"
 )
 
 var ctx = context.Background()

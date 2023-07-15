@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	db "github.com/Klaushayan/azar/azar-db"
-	"github.com/Klaushayan/azar/core/utils"
+	db "github.com/ShayanGsh/azar/azar-db"
+	"github.com/ShayanGsh/azar/core/utils"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 

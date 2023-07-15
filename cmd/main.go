@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Klaushayan/azar/api"
+	"github.com/ShayanGsh/azar/api"
 	"log"
 )
 

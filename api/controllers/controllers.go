@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	db "github.com/Klaushayan/azar/azar-db"
+	db "github.com/ShayanGsh/azar/azar-db"
 	"github.com/go-playground/validator/v10"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"

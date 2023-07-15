@@ -1,4 +1,4 @@
-module github.com/Klaushayan/azar
+module github.com/ShayanGsh/azar
 
 go 1.18
 

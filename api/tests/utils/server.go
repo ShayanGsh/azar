@@ -3,7 +3,7 @@ package test_utils
 import (
 	"strconv"
 
-	"github.com/Klaushayan/azar/api"
+	"github.com/ShayanGsh/azar/api"
 )
 
 func GenerateConfig(port string) *api.Config {

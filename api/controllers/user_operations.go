@@ -3,7 +3,7 @@ package controllers
 import (
 	"errors"
 	"net/http"
-	"github.com/Klaushayan/azar/core"
+	"github.com/ShayanGsh/azar/core"
 )
 
 func (uc *UserController) UpdateUserCred(rw http.ResponseWriter, r *http.Request) {

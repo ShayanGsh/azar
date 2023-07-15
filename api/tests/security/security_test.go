@@ -9,11 +9,11 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Klaushayan/azar/api"
-	"github.com/Klaushayan/azar/api/controllers"
-	"github.com/Klaushayan/azar/api/tests/utils"
-	db "github.com/Klaushayan/azar/azar-db"
-	"github.com/Klaushayan/azar/core"
+	"github.com/ShayanGsh/azar/api"
+	"github.com/ShayanGsh/azar/api/controllers"
+	"github.com/ShayanGsh/azar/api/tests/utils"
+	db "github.com/ShayanGsh/azar/azar-db"
+	"github.com/ShayanGsh/azar/core"
 )
 
 // TODO: format this file

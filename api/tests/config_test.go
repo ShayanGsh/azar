@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Klaushayan/azar/api"
+	"github.com/ShayanGsh/azar/api"
 	"github.com/stretchr/testify/assert"
 )
 

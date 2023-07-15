@@ -8,10 +8,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Klaushayan/azar/api/controllers"
-	db "github.com/Klaushayan/azar/azar-db"
-	"github.com/Klaushayan/azar/core"
-	"github.com/Klaushayan/azar/core/utils"
+	"github.com/ShayanGsh/azar/api/controllers"
+	db "github.com/ShayanGsh/azar/azar-db"
+	"github.com/ShayanGsh/azar/core"
+	"github.com/ShayanGsh/azar/core/utils"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/assert"
 )
