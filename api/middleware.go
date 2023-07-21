@@ -1,6 +1,8 @@
 package api
 
 import (
+	"net/http"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -28,4 +30,16 @@ func AuthenticateAccess(router *chi.Mux, jwt *jwtauth.JWTAuth) *chi.Mux {
 	router.Use(jwtauth.Verifier(jwt))
 	router.Use(jwtauth.Authenticator)
 	return router
+}
+
+func Authorizer(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		_, claims, _ := jwtauth.FromContext(r.Context())
+		role := claims["role"].(string)
+		if role != "admin" {
+			http.Error(w, http.StatusText(401), 401)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }

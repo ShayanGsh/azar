@@ -1,6 +1,6 @@
 # Azar: an open-source authentication server
 
-Azar is an open-source authentication server that provides a simple and secure way to authenticate users. It is written in Go and uses PostgreSQL as its database.
+Azar is an open-source authentication server that provides a simple and secure way to authenticate users. It is written in Go and uses PostgreSQL and Redis as its database.
 
 ## Features
 
