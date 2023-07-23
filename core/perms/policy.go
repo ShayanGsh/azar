@@ -3,7 +3,7 @@ package perms
 import "github.com/ShayanGsh/azar/core/errors"
 
 type Policy interface{
-	IsAllowed(action string) bool
+	IsAllowed(action string, resource string) bool
 	AddPolicy(name string, description string, action string, resource string) error
 	RemovePolicy(name string) error
 	GetPolicy(name string) (PolicyData, error)
