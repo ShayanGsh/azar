@@ -66,7 +66,7 @@ type RoleList struct{
 
 func (rl *RoleList) GetRole(roleName string) Role{
 	if role, ok := rl.Roles[roleName]; ok {
-		return role
+		return &role
 	}
 	return nil
 }
