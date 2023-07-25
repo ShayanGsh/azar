@@ -6,7 +6,7 @@ type Role interface{
 	AddPermissions(policy Policy)
 	RemovePermissions(policy Policy)
 	RemoveAllPermissions()
-	GetPermissions() []Policy
+	GetPermissions() Policies
 	RemovePermissionByName(name string)
 }
 
@@ -26,7 +26,7 @@ type RoleManager interface{
 
 type RoleData struct{
 	Name string
-	Permissions Policy
+	Permissions Policies
 }
 
 func (rd *RoleData) IsAllowed(action string, resource string) bool{
@@ -38,7 +38,25 @@ func (rd *RoleData) GetRoleName() string{
 }
 
 func (rd *RoleData) AddPermissions(policy Policy){
-	rd.Permissions.AddPolicy(policy)
+	rd.Permissions.AddPolicyByObject(policy)
+}
+
+func (rd *RoleData) RemovePermissions(policy Policy){
+	rd.Permissions.RemovePolicy(policy.GetPolicyName())
+}
+
+func (rd *RoleData) RemoveAllPermissions(){
+	for policy := range rd.Permissions.IterPolicies() {
+		rd.Permissions.RemovePolicy(policy.Name)
+	}
+}
+
+func (rd *RoleData) GetPermissions() Policies{
+	return rd.Permissions
+}
+
+func (rd *RoleData) RemovePermissionByName(name string){
+	rd.Permissions.RemovePolicy(name)
 }
 
 type RoleList struct{
