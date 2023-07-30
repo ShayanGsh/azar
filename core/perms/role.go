@@ -1,5 +1,7 @@
 package perms
 
+import "github.com/ShayanGsh/azar/core/errors"
+
 type Role interface{
 	IsAllowed(action string, resource string) bool
 	GetRoleName() string
@@ -22,6 +24,11 @@ type RoleManager interface{
 	AssignRole(roleName string, roleable Roleable)
 	UnassignRole(roleable Roleable)
 	SetDefaultRole(role Role)
+	SetDefaultRoleByName(roleName string)
+	AddRole(role Role)
+	AddBulkRoles(roles []Role)
+	RemoveRole(roleName string)
+	Clear()
 }
 
 type RoleData struct{
@@ -59,14 +66,50 @@ func (rd *RoleData) RemovePermissionByName(name string){
 	rd.Permissions.RemovePolicy(name)
 }
 
-type RoleList struct{
+type RoleMap struct{
 	Roles map[string]RoleData
 	DefaultRole Role
 }
 
-func (rl *RoleList) GetRole(roleName string) Role{
+func (rl *RoleMap) GetRole(roleName string) Role{
 	if role, ok := rl.Roles[roleName]; ok {
 		return &role
 	}
 	return nil
+}
+
+func (rl *RoleMap) GetRoles() []Role {
+    roles := make([]Role, 0, len(rl.Roles))
+    for _, roleData := range rl.Roles {
+        roles = append(roles, &roleData)
+    }
+    return roles
+}
+
+func (rl *RoleMap) AssignRole(roleName string, roleable Roleable){
+	roleable.SetRole(rl.GetRole(roleName))
+}
+
+func (rl *RoleMap) UnassignRole(roleable Roleable){
+	roleable.SetRole(rl.DefaultRole)
+}
+
+func (rl *RoleMap) SetDefaultRole(role Role){
+	rl.DefaultRole = role
+}
+
+func (rl *RoleMap) SetDefaultRoleByName(roleName string) error{
+	if role := rl.GetRole(roleName); role != nil {
+		rl.SetDefaultRole(role)
+		return nil
+	} else {
+		return errors.ErrRoleNotFound
+	}
+}
+
+// Constructor
+func NewRoleMap() RoleMap{
+	return RoleMap{
+		Roles: make(map[string]RoleData),
+	}
 }
