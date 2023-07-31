@@ -1,6 +1,9 @@
 package perms
 
-import "github.com/ShayanGsh/azar/core/errors"
+import (
+	"github.com/ShayanGsh/azar/core/errors"
+	"github.com/ShayanGsh/azar/core/utils"
+)
 
 type Policies interface{
 	IsAllowed(action string, resource string) bool
@@ -45,12 +48,12 @@ func (pl *PolicyList) IsAllowed(action string, resource string) bool{
 
 func (pl *PolicyList) AddPolicy(name string, description string, action string, resource string) error{
 	if _, ok := pl.Policies[name]; ok {
-		return errors.ErrPolicyNameExists
+		return utils.Error(errors.ErrPolicyNameExists, name)
 	}
 
 	for _, policy := range pl.Policies {
 		if policy.Action == action && policy.Resource == resource {
-			return errors.ErrPolicyExists
+			return utils.Error(errors.ErrPolicyExists, action, resource)
 		}
 	}
 
@@ -65,12 +68,12 @@ func (pl *PolicyList) AddPolicy(name string, description string, action string, 
 
 func (pl *PolicyList) AddPolicyByObject(policy Policy) error{
 	if _, ok := pl.Policies[policy.GetPolicyName()]; ok {
-		return errors.ErrPolicyNameExists
+		return utils.Error(errors.ErrPolicyNameExists, policy.GetPolicyName())
 	}
 
 	for _, p := range pl.Policies {
 		if p.Action == policy.GetPolicyAction() && p.Resource == policy.GetPolicyResource() {
-			return errors.ErrPolicyExists
+			return utils.Error(errors.ErrPolicyExists, policy.GetPolicyAction(), policy.GetPolicyResource())
 		}
 	}
 
@@ -85,7 +88,7 @@ func (pl *PolicyList) AddPolicyByObject(policy Policy) error{
 
 func (pl *PolicyList) RemovePolicy(name string) error{
 	if _, ok := pl.Policies[name]; !ok {
-		return errors.ErrPolicyNotFound
+		return utils.Error(errors.ErrPolicyNotFound, name)
 	}
 
 	delete(pl.Policies, name)
@@ -94,7 +97,7 @@ func (pl *PolicyList) RemovePolicy(name string) error{
 
 func (pl *PolicyList) GetPolicy(name string) (PolicyData, error){
 	if _, ok := pl.Policies[name]; !ok {
-		return PolicyData{}, errors.ErrPolicyNotFound
+		return PolicyData{}, utils.Error(errors.ErrPolicyNotFound, name)
 	}
 
 	return pl.Policies[name], nil

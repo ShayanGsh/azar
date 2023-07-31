@@ -5,7 +5,8 @@ import (
 )
 
 var (
-	ErrPolicyExists = utils.CustomError("Policy already exists")
-	ErrPolicyNameExists = utils.CustomError("Policy name already exists")
-	ErrPolicyNotFound = utils.CustomError("Policy not found")
+	ErrPolicyExists = utils.ErrorMsg("Policy already exists")
+	ErrPolicyNameExists = utils.ErrorMsg("Policy name already exists")
+	ErrPolicyNotFound = utils.ErrorMsg("Policy not found")
+	ErrRoleNotFound = utils.ErrorMsg("Role not found")
 )
