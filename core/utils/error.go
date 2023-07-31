@@ -11,7 +11,7 @@ func Error(msg ErrorMsg, data ...string) error {
 	sb.WriteString(string(msg))
 	if len(data) > 0 {
 		sb.WriteString(" ")
-		sb.WriteString(strings.Join(data, " "))
+		sb.WriteString(strings.Join(data, " - "))
 	}
 	return CustomError(sb.String())
 }
