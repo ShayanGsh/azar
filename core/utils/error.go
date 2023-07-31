@@ -5,38 +5,21 @@ import (
 
 )
 
-
-type Error interface{
-	Error() string
-	String() string
-	Errorf(format string, a ...interface{String() string}) string
+func Error(msg ErrorMsg, data ...string) error {
+	sb := strings.Builder{}
+	sb.WriteString("Error: ")
+	sb.WriteString(string(msg))
+	if len(data) > 0 {
+		sb.WriteString(" ")
+		sb.WriteString(strings.Join(data, " "))
+	}
+	return CustomError(sb.String())
 }
 
-type CustomError struct {
-	msg string
-}
+type ErrorMsg string
+
+type CustomError string
 
 func (e CustomError) Error() string {
-	var sb strings.Builder
-	sb.WriteString("Error: ")
-	sb.WriteString(e.msg)
-	return sb.String()
+	return string(e)
 }
-
-func (e CustomError) String() string {
-	return e.Error()
-}
-
-func (e CustomError) Errorf(format string, a ...interface{String() string}) string {
-	var sb strings.Builder
-	sb.WriteString("Error: ")
-	sb.WriteString(e.msg)
-	sb.WriteString(" ")
-	sb.WriteString(format)
-	sb.WriteString(" ")
-	for _, arg := range a {
-		sb.WriteString(arg.String())
-	}
-	return sb.String()
-}
-// TODO: rework error handling entirely
