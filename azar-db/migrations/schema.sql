@@ -54,11 +54,11 @@ CREATE TABLE user_roles (
 );
 
 -- +migrate Up
-CREATE TABLE user_group_role_map {
+CREATE TABLE user_group_role_map (
     user_group_id INTEGER NOT NULL REFERENCES user_groups(id) ON DELETE CASCADE,
     role_id INTEGER NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
     PRIMARY KEY (user_group_id, role_id)
-};
+);
 
 -- +migrate Down
 DROP TABLE users;
