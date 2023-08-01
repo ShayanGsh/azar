@@ -2,7 +2,7 @@
 sql:
   - engine: "postgresql"
     queries: "query.sql"
-    schema: "schema.sql"
+    schema: "azar-db/migrations/schema.sql"
     gen:
       go:
         package: "db"
