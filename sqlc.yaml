@@ -1,8 +1,8 @@
 ﻿version: "2"
 sql:
   - engine: "postgresql"
-    queries: "query.sql"
-    schema: "azar-db/migrations/schema.sql"
+    queries: "azar-db/queries/"
+    schema: "azar-db/migrations/"
     gen:
       go:
         package: "db"
