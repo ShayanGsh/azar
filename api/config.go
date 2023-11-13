@@ -17,6 +17,7 @@ type Config struct {
 	JWTSecret string `json:"secret" envconfig:"JWT_SECRET" default:"secret"`
 	JWTExpiration int `json:"expiration" default:"3600"` // in seconds
 	Database Database `json:"database"`
+	MigrationDir string `json:"migration_dir" envconfig:"MIGRATION_DIR" default:"migrations"`
 
 	// ENV VARIABLES ONLY
 	DatabaseHost string `json:"-" envconfig:"DB_HOST" default:"localhost"`

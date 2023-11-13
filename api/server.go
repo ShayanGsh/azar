@@ -78,14 +78,14 @@ func (s *APIServer) MigrationCheck() bool {
 	}
 
 	// Check if the database is migrated
-	status, err := db.IsMigrated(db.Migration("./"), conn)
+	status, err := db.IsMigrated(db.Migration(s.Config.MigrationDir), conn)
 	if err != nil {
 		panic(err)
 	}
 
 	// If the database is not migrated, run the migration
 	if !status {
-		err = db.RunMigration(db.Migration("./"), conn, 0)
+		err = db.RunMigration(db.Migration(s.Config.MigrationDir), conn, 0)
 		if err != nil {
 			panic(err)
 		}
