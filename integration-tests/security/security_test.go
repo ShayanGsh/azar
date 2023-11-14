@@ -26,6 +26,7 @@ func TestMain(m *testing.M) {
 	postgresContainer, mappedPort := test_utils.RunPostgresContainer()
 	defer postgresContainer.Terminate(ctx)
 	c := test_utils.GenerateConfig(mappedPort)
+	c.MigrationPath = "../../azar-db/migrations" //TODO: hard-codded migration path
 	s := api.NewAPIServer(c)
 
 	s.MigrationCheck()
