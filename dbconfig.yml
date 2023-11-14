@@ -1,0 +1,5 @@
+﻿# THIS FILE ONLY EXISTS TO MAKE sql-migrate CLI HAPPY
+development:
+  dialect: postgres
+  dir: azar-db/migrations
+  datasource: postgres://azar:azar@localhost:5432/azar?sslmode=disable

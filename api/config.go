@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -17,6 +17,7 @@ type Config struct {
 	JWTSecret string `json:"secret" envconfig:"JWT_SECRET" default:"secret"`
 	JWTExpiration int `json:"expiration" default:"3600"` // in seconds
 	Database Database `json:"database"`
+	MigrationPath string `json:"migration_path" envconfig:"MIGRATION_PATH" default:"migrations"`
 
 	// ENV VARIABLES ONLY
 	DatabaseHost string `json:"-" envconfig:"DB_HOST" default:"localhost"`
@@ -62,8 +63,24 @@ func (c *Config) GetJWTExpiration() (time.Duration) {
 	return time.Duration(c.JWTExpiration) * time.Second
 }
 
+func NewConfig() (*Config) {
+	return &Config{
+		Port: 5000,
+		Host: "localhost",
+		JWTSecret: "secret",
+		JWTExpiration: 3600,
+		MigrationPath: "azar-db/migrations",
+		Database: Database{
+			Host: "localhost",
+			Port: 5432,
+			Username: "postgres",
+			Password: "postgres",
+			Name: "azar",},
+	}
+}
+
 func LoadConfig(path string) (*Config, error) {
-	configFile, err := ioutil.ReadFile(path)
+	configFile, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}

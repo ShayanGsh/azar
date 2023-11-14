@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/Klaushayan/azar/api"
+	"github.com/ShayanGsh/azar/api"
 	"log"
 )
 
@@ -11,7 +11,7 @@ func main() {
 		panic(e)
 	}
 
-	s := api.NewServer(c)
+	s := api.NewAPIServer(c)
 	s.MigrationCheck()
 	s.Start()
 	log.Println("Started")

@@ -12,7 +12,7 @@ RUN go build -o main .
 FROM alpine
 
 COPY --from=builder /app/cmd/main /app/
-COPY --from=builder /app/schema.sql /app/
+COPY --from=builder /app/azar-db/migrations /app/migrations
 
 RUN chmod +x /app/main
 

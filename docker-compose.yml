@@ -15,8 +15,10 @@ services:
       - azar-network
   redis:
     image: redis:latest
-    ports:
-      - "9000:6379"
+    expose:
+      - "6379"
+    networks:
+      - azar-network
   postgres:
     image: postgres:latest
     hostname: postgresql
@@ -27,7 +29,7 @@ services:
       POSTGRES_USER: ${AZAR_DB_USER}
       POSTGRES_DB: ${AZAR_DB}
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     restart: always
     networks:
       - azar-network
@@ -36,3 +38,5 @@ networks:
   azar-network:
     driver: bridge
 
+volumes:
+  db:

@@ -6,17 +6,24 @@ import (
 	"net/http"
 	"log"
 
-	"github.com/Klaushayan/azar/api/controllers"
-	"github.com/Klaushayan/azar/azar-db"
+	"github.com/ShayanGsh/azar/api/controllers"
+	"github.com/ShayanGsh/azar/azar-db"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/lib/pq"
 	"github.com/pseidemann/finish"
 )
 
-// Server is the main struct for the application. It holds the router, config, and other
+type Server interface {
+	Start() error
+	Shutdown() error
+	IsRunning() bool
+	Wait()
+}
+
+//  This is the main struct for the application. It holds the router, config, and other
 // important parts of the application.
-type Server struct {
+type APIServer struct {
 	Router *chi.Mux
 	Config *Config
 	JWTAuth *JWT
@@ -34,8 +41,8 @@ type Server struct {
 // using the provided configuration.
 // It initializes a DB pool and
 // a new JWTAuth instance.
-func NewServer(c *Config) *Server {
-	s := &Server {
+func NewAPIServer(c *Config) *APIServer {
+	s := &APIServer {
 		Router: chi.NewRouter(),
 		Config: c,
 		JWTAuth: NewJWT(c.JWTSecret),
@@ -48,22 +55,8 @@ func NewServer(c *Config) *Server {
 	return s
 }
 
-// SetupRoutes sets up the routes and middleware for the server.
-// The routes are grouped by authentication level. The JWTAuth
-// middleware is used to verify the token in the header, and
-// the AuthenticateAccess middleware is used to verify that the
-// user has the correct access level to access the route.
-func (s *Server) setupRoutes() {
-	SetupMiddlewares(s.Router)
-	s.Router.Group(func(r chi.Router) {
-		AuthenticateAccess(r.(*chi.Mux), s.JWTAuth.JWTAuth)
-	})
-	s.Router.Post("/login", s.UserControllers.Login)
-	s.Router.Post("/register", s.UserControllers.Register)
-}
-
 // createDBPool creates a connection pool to the database.
-func (s *Server) createDBPool() {
+func (s *APIServer) createDBPool() {
 	connConfig, err := pgxpool.ParseConfig(s.Config.ToConnString())
 
 	if err != nil {
@@ -77,7 +70,7 @@ func (s *Server) createDBPool() {
 	}
 }
 
-func (s *Server) MigrationCheck() bool {
+func (s *APIServer) MigrationCheck() bool {
 	// Open a connection to the database
 	conn, err := sql.Open("postgres", s.Config.ToConnString())
 	if err != nil {
@@ -85,14 +78,14 @@ func (s *Server) MigrationCheck() bool {
 	}
 
 	// Check if the database is migrated
-	status, err := db.IsMigrated(db.Migration("./"), conn)
+	status, err := db.IsMigrated(db.Migration(s.Config.MigrationPath), conn)
 	if err != nil {
 		panic(err)
 	}
 
 	// If the database is not migrated, run the migration
 	if !status {
-		err = db.RunMigration(db.Migration("./"), conn, 0)
+		err = db.RunMigration(db.Migration(s.Config.MigrationPath), conn, 0)
 		if err != nil {
 			panic(err)
 		}
@@ -108,12 +101,12 @@ func (s *Server) MigrationCheck() bool {
 // adds the HTTP server to it. It starts listening on the HTTP server
 // and sets the finisher to the server. It waits for the finisher to
 // finish.
-func (s *Server) Start() {
+func (s *APIServer) Start() error {
 	httpServer := &http.Server{
 		Addr: s.Config.Address(),
 		Handler: s.Router,
 	}
-	s.setupRoutes()
+	SetRoutes(s.Router, s)
 
 	fin := finish.New()
 	fin.Add(httpServer)
@@ -122,11 +115,13 @@ func (s *Server) Start() {
 	s.Finish = fin
 	s.started = true
 	fin.Wait()
+
+	return nil
 }
 
 // startListening starts a goroutine to listen for incoming HTTP requests.
 // It will also shut down the server if there is an error.
-func (s *Server) startListening(httpServer *http.Server) {
+func (s *APIServer) startListening(httpServer *http.Server) {
 	go func() {
 		err := httpServer.ListenAndServe()
 		if err != nil {
@@ -138,23 +133,24 @@ func (s *Server) startListening(httpServer *http.Server) {
 }
 
 // IsRunning returns true if the server is running and false if it is not.
-func (s *Server) IsRunning() bool {
+func (s *APIServer) IsRunning() bool {
 	return s.started
 }
 
 
 // Shutdown closes the database connection and
 // triggers the Finish channel.
-func (s *Server) Shutdown() {
+func (s *APIServer) Shutdown() error {
 	s.DB.Close()
 	s.Finish.Trigger()
 	s.started = false
+	return nil
 }
 
 // Wait blocks until the server is done.
 //
 // The server is done when there are no more
 // connections.
-func (s *Server) Wait() {
+func (s *APIServer) Wait() {
 	s.Finish.Wait()
 }
