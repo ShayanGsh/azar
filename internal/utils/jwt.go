@@ -1,4 +1,4 @@
-package api
+package utils
 
 import (
 	"time"
@@ -13,8 +13,8 @@ type JWT struct {
 }
 
 func NewJWT(secret string) *JWT {
-	return &JWT {
-		JWTAuth: jwtauth.New("HS256", []byte(secret), nil),
+	return &JWT{
+		JWTAuth:           jwtauth.New("HS256", []byte(secret), nil),
 		DefaultExpiration: time.Hour * 1, // default expiration time is 1 hour
 	}
 }
@@ -28,11 +28,11 @@ func (j *JWT) Encode(userID, username string, expiration ...time.Duration) (stri
 		exp = j.DefaultExpiration
 	}
 
-	t, tokenString, err := j.JWTAuth.Encode(map[string]interface{} {
-		"id": userID,
+	t, tokenString, err := j.JWTAuth.Encode(map[string]interface{}{
+		"id":       userID,
 		"username": username,
-		"iat": time.Now().Unix(),
-		"exp": time.Now().Add(exp).Unix(),
+		"iat":      time.Now().Unix(),
+		"exp":      time.Now().Add(exp).Unix(),
 	})
 
 	if err != nil {

@@ -1,4 +1,4 @@
-package controllers
+package api
 
 import (
 	"encoding/json"
@@ -32,6 +32,6 @@ func ReplySuccess(rw http.ResponseWriter, message string, status ...int) {
 	Reply(rw, ReplyMessage{
 		Success: true,
 		Message: message,
-		Status: status[0],
+		Status:  status[0],
 	})
 }

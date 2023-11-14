@@ -3,10 +3,11 @@ package api
 import (
 	"context"
 	"database/sql"
-	"net/http"
+	"github.com/ShayanGsh/azar/api/controllers/user"
+	"github.com/ShayanGsh/azar/internal/utils"
 	"log"
+	"net/http"
 
-	"github.com/ShayanGsh/azar/api/controllers"
 	"github.com/ShayanGsh/azar/azar-db"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -21,36 +22,36 @@ type Server interface {
 	Wait()
 }
 
-//  This is the main struct for the application. It holds the router, config, and other
+//	This is the main struct for the application. It holds the router, config, and other
+//
 // important parts of the application.
 type APIServer struct {
-	Router *chi.Mux
-	Config *Config
-	JWTAuth *JWT
-	DB *pgxpool.Pool
-	Finish *finish.Finisher
+	Router  *chi.Mux
+	Config  *Config
+	JWTAuth *utils.JWT
+	DB      *pgxpool.Pool
+	Finish  *finish.Finisher
 
 	started bool
 
 	// Controllers
-	UserControllers *controllers.UserController
+	UserControllers *user.Controller
 }
-
 
 // NewServer creates a new server instance
 // using the provided configuration.
 // It initializes a DB pool and
 // a new JWTAuth instance.
 func NewAPIServer(c *Config) *APIServer {
-	s := &APIServer {
-		Router: chi.NewRouter(),
-		Config: c,
-		JWTAuth: NewJWT(c.JWTSecret),
+	s := &APIServer{
+		Router:  chi.NewRouter(),
+		Config:  c,
+		JWTAuth: utils.NewJWT(c.JWTSecret),
 	}
 
 	s.createDBPool()
 
-	s.UserControllers = controllers.NewUserController(s.DB, s.JWTAuth)
+	s.UserControllers = user.NewController(s.DB, s.JWTAuth)
 
 	return s
 }
@@ -103,7 +104,7 @@ func (s *APIServer) MigrationCheck() bool {
 // finish.
 func (s *APIServer) Start() error {
 	httpServer := &http.Server{
-		Addr: s.Config.Address(),
+		Addr:    s.Config.Address(),
 		Handler: s.Router,
 	}
 	SetRoutes(s.Router, s)
@@ -125,9 +126,10 @@ func (s *APIServer) startListening(httpServer *http.Server) {
 	go func() {
 		err := httpServer.ListenAndServe()
 		if err != nil {
-			s.Shutdown()
+			shutdownErr := s.Shutdown()
 			s.started = false
 			log.Println(err)
+			log.Println(shutdownErr)
 		}
 	}()
 }
@@ -136,7 +138,6 @@ func (s *APIServer) startListening(httpServer *http.Server) {
 func (s *APIServer) IsRunning() bool {
 	return s.started
 }
-
 
 // Shutdown closes the database connection and
 // triggers the Finish channel.
