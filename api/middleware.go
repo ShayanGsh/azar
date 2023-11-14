@@ -37,7 +37,7 @@ func Authorizer(next http.Handler) http.Handler {
 		_, claims, _ := jwtauth.FromContext(r.Context())
 		role := claims["role"].(string)
 		if role != "admin" {
-			http.Error(w, http.StatusText(401), 401)
+			http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 			return
 		}
 		next.ServeHTTP(w, r)

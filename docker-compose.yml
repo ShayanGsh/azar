@@ -22,14 +22,14 @@ services:
   postgres:
     image: postgres:latest
     hostname: postgresql
-    expose:
-      - "5432"
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_PASSWORD: ${AZAR_DB_PASS}
       POSTGRES_USER: ${AZAR_DB_USER}
       POSTGRES_DB: ${AZAR_DB}
     volumes:
-      - ./db:/var/lib/postgresql/data
+      - db:/var/lib/postgresql/data
     restart: always
     networks:
       - azar-network
@@ -37,3 +37,6 @@ services:
 networks:
   azar-network:
     driver: bridge
+
+volumes:
+  db:
