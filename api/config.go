@@ -14,7 +14,7 @@ import (
 type Config struct {
 	Port int `json:"port" envconfig:"PORT" default:"5000"`
 	Host string `json:"host" envconfig:"HOST" default:"localhost"`
-	JWTSecret string `json:"secret" envconfig:"JWT_SECRETpostgres" default:"secret"`
+	JWTSecret string `json:"secret" envconfig:"JWT_SECRET" default:"secret"`
 	JWTExpiration int `json:"expiration" default:"3600"` // in seconds
 	Database Database `json:"database"`
 	MigrationPath string `json:"migration_path" envconfig:"MIGRATION_PATH" default:"migrations"`
