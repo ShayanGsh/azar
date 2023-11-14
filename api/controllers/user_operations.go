@@ -28,8 +28,13 @@ func (uc *UserController) UpdateUserCred(rw http.ResponseWriter, r *http.Request
 		return
 	}
 	if v {
-		ReplySuccess(rw, "updated user", http.StatusOK)
-		return
+		err = core.UpdateUser(q, u, r.Context())
+		if err != nil {
+			ReplyError(rw, err, http.StatusInternalServerError)
+			return
+		}
+		ReplySuccess(rw, "user updated successfully", http.StatusOK)
+	} else {
+		ReplyError(rw, errors.New("invalid credentials"), http.StatusUnauthorized)
 	}
-	ReplyError(rw, errors.New("invalid credentials"), http.StatusUnauthorized)
 }

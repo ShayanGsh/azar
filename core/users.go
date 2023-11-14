@@ -16,7 +16,7 @@ type UpdateUserData struct {
 	Email   string `json:"email" validate:"required_without=Username,omitempty,email"`
 	NewEmail    string `json:"new_email" validate:"omitempty,email"`
 	OldPassword string `json:"old_password" validate:"required"`
-	NewPassword string `json:"new_password" validate:"min=8"`
+	NewPassword string `json:"new_password" validate:"omitempty,min=8"`
 }
 
 type UserData struct {
