@@ -8,7 +8,7 @@ import (
 
 	"github.com/ShayanGsh/azar/api"
 	"github.com/ShayanGsh/azar/api/controllers"
-	"github.com/ShayanGsh/azar/api/tests/utils"
+	"github.com/ShayanGsh/azar/integration-tests/utils"
 )
 
 var ctx = context.Background()
