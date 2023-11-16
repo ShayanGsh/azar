@@ -10,16 +10,16 @@ import (
 	"testing"
 
 	"github.com/ShayanGsh/azar/api"
-	"github.com/ShayanGsh/azar/api/controllers"
-	"github.com/ShayanGsh/azar/integration-tests/utils"
+	"github.com/ShayanGsh/azar/api/controllers/user"
 	db "github.com/ShayanGsh/azar/azar-db"
-	"github.com/ShayanGsh/azar/core"
+	"github.com/ShayanGsh/azar/integration-tests/utils"
+	"github.com/ShayanGsh/azar/internal/models"
 )
 
 // TODO: format this file
 
 var ctx = context.Background()
-var uc *controllers.UserController
+var uc *user.Controller
 
 func TestMain(m *testing.M) {
 	// setup
@@ -30,7 +30,7 @@ func TestMain(m *testing.M) {
 	s := api.NewAPIServer(c)
 
 	s.MigrationCheck()
-	uc = controllers.NewUserController(s.DB, s.JWTAuth)
+	uc = user.NewController(s.DB, s.JWTAuth)
 
 	// run tests
 	exitCode := m.Run()
@@ -79,12 +79,12 @@ func TestSQLInjection(t *testing.T) {
 
 	q := db.New(c)
 
-	user := core.UserData{
+	user := models.UserData{
 		Username: "test",
 		Password: "Testing123",
 	}
 
-	if _, err = core.GetUser(q, user, ctx); err != nil {
+	if _, err = models.GetUser(q, user, ctx); err != nil {
 		t.Fatal(err) // if the users table is dropped, this will fail
 	}
 }

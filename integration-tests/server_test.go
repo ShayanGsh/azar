@@ -7,12 +7,12 @@ import (
 	"time"
 
 	"github.com/ShayanGsh/azar/api"
-	"github.com/ShayanGsh/azar/api/controllers"
+	"github.com/ShayanGsh/azar/api/controllers/user"
 	"github.com/ShayanGsh/azar/integration-tests/utils"
 )
 
 var ctx = context.Background()
-var uc *controllers.UserController
+var uc *user.Controller
 var s *api.APIServer
 
 // postgres
@@ -24,7 +24,7 @@ func TestMain(m *testing.M) {
 	c := test_utils.GenerateConfig(mappedPort)
 	c.MigrationPath = "../azar-db/migrations" //TODO: hard-codded migration path
 	s = api.NewAPIServer(c)
-	uc = controllers.NewUserController(s.DB, s.JWTAuth)
+	uc = user.NewController(s.DB, s.JWTAuth)
 
 	// run tests
 	exitCode := m.Run()

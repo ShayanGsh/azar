@@ -1,9 +1,6 @@
 package perms
 
-import (
-	"github.com/ShayanGsh/azar/core/errors"
-	"github.com/ShayanGsh/azar/core/utils"
-)
+import "github.com/ShayanGsh/azar/internal/errors"
 
 type Role interface {
 	IsAllowed(action string, resource string) bool
@@ -106,7 +103,7 @@ func (rl *RoleMap) SetDefaultRoleByName(roleName string) error {
 		rl.SetDefaultRole(role)
 		return nil
 	} else {
-		return utils.Error(errors.ErrRoleNotFound, roleName)
+		return errors.Error(errors.ErrRoleNotFound, roleName)
 	}
 }
 
