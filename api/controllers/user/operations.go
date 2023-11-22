@@ -2,22 +2,22 @@ package user
 
 import (
 	"errors"
-	"github.com/ShayanGsh/azar/internal/api"
-	"github.com/ShayanGsh/azar/internal/models"
+	"github.com/ShayanGsh/azar/internal/rest"
+	"github.com/ShayanGsh/azar/internal/model"
 	"net/http"
 )
 
 func (uc *Controller) UpdateUserCred(rw http.ResponseWriter, r *http.Request) {
-	var u models.UpdateUserData
+	var u model.UpdateUserData
 	c, q, err := uc.ParseRequest(r, &u)
 
 	if err != nil {
-		api.ReplyError(rw, err, http.StatusInternalServerError)
+		rest.ReplyError(rw, err, http.StatusInternalServerError)
 		return
 	}
 	defer c.Release()
 
-	user := models.UserData{
+	user := model.UserData{
 		Username: u.Username,
 		Email:    u.Email,
 		Password: u.OldPassword,
@@ -25,17 +25,17 @@ func (uc *Controller) UpdateUserCred(rw http.ResponseWriter, r *http.Request) {
 
 	v, err := uc.VerifyUser(q, user)
 	if err != nil {
-		api.ReplyError(rw, err, http.StatusInternalServerError)
+		rest.ReplyError(rw, err, http.StatusInternalServerError)
 		return
 	}
 	if v {
-		err = models.UpdateUser(q, u, r.Context())
+		err = model.UpdateUser(q, u, r.Context())
 		if err != nil {
-			api.ReplyError(rw, err, http.StatusInternalServerError)
+			rest.ReplyError(rw, err, http.StatusInternalServerError)
 			return
 		}
-		api.ReplySuccess(rw, "user updated successfully", http.StatusOK)
+		rest.ReplySuccess(rw, "user updated successfully", http.StatusOK)
 	} else {
-		api.ReplyError(rw, errors.New("invalid credentials"), http.StatusUnauthorized)
+		rest.ReplyError(rw, errors.New("invalid credentials"), http.StatusUnauthorized)
 	}
 }

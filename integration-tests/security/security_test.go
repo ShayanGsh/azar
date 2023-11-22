@@ -13,7 +13,7 @@ import (
 	"github.com/ShayanGsh/azar/api/controllers/user"
 	db "github.com/ShayanGsh/azar/azar-db"
 	"github.com/ShayanGsh/azar/integration-tests/utils"
-	"github.com/ShayanGsh/azar/internal/models"
+	"github.com/ShayanGsh/azar/internal/model"
 )
 
 // TODO: format this file
@@ -79,12 +79,12 @@ func TestSQLInjection(t *testing.T) {
 
 	q := db.New(c)
 
-	user := models.UserData{
+	user := model.UserData{
 		Username: "test",
 		Password: "Testing123",
 	}
 
-	if _, err = models.GetUser(q, user, ctx); err != nil {
+	if _, err = model.GetUser(q, user, ctx); err != nil {
 		t.Fatal(err) // if the users table is dropped, this will fail
 	}
 }

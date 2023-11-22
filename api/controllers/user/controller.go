@@ -1,17 +1,17 @@
 package user
 
 import (
-	"github.com/ShayanGsh/azar/internal/api"
+	"github.com/ShayanGsh/azar/internal/rest"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Controller struct {
-	api.Controller
+	rest.Controller
 }
 
-func NewController(dcp *pgxpool.Pool, jwt api.JWT) *Controller {
+func NewController(dcp *pgxpool.Pool, jwt rest.JWT) *Controller {
 	return &Controller{
-		Controller: api.Controller{
+		Controller: rest.Controller{
 			DatabaseConnectionPool: dcp,
 			Jwt:                    jwt,
 		},
