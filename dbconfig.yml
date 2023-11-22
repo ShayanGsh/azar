@@ -2,4 +2,4 @@
 development:
   dialect: postgres
   dir: azar-db/migrations
-  datasource: postgres://azar:azar@localhost:5432/azar?sslmode=disable
+  datasource: postgres://${AZAR_DB_USER}:${AZAR_DB_PASS}@${AZAR_DB_HOST}:${AZAR_DB_PORT}/${AZAR_DB_NAME}?sslmode=disable
