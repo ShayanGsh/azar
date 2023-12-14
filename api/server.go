@@ -31,6 +31,7 @@ type APIServer struct {
 	JWTAuth *utils.JWT
 	DB      *pgxpool.Pool
 	Finish  *finish.Finisher
+	Initialized bool
 
 	started bool
 
@@ -107,7 +108,7 @@ func (s *APIServer) Start() error {
 		Addr:    s.Config.Address(),
 		Handler: s.Router,
 	}
-	SetRoutes(s.Router, s)
+	SetupRoutes(s.Router, s)
 
 	fin := finish.New()
 	fin.Add(httpServer)

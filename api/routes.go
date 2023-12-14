@@ -4,7 +4,7 @@ import "github.com/go-chi/chi/v5"
 
 var AUTH_API_PATH = "/api/auth"
 
-func SetRoutes(mux *chi.Mux, s *APIServer) {
+func SetupRoutes(mux *chi.Mux, s *APIServer) {
 	mux.Route(AUTH_API_PATH, func(r chi.Router) {
 		r.Post("/login", s.UserControllers.Login)
 		r.Post("/register", s.UserControllers.Register)
